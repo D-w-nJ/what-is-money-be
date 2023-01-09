@@ -41,10 +41,9 @@ dependencies {
     // DB
     runtimeOnly ('mysql:mysql-connector-java') //mysql8
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
-    implementation ('org.springframework.boot:spring-boot-starter-jdbc')
+    implementation('org.springframework.boot:spring-boot-start-data-jpa') // JPA, 스프링 데이터 jpa 추가
+    //implementation ('org.springframework.boot:spring-boot-starter-jdbc') // jdbc는 jpa에 의존(포함)된다.
     compile('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
-
-
 
     // Web
     implementation ('org.springframework.boot:spring-boot-starter-web')
