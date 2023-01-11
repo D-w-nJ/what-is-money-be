@@ -13,13 +13,14 @@ spring:
     password: mnmn123qwe # 비밀번호를 입력해주세요!
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  jpa:
+    hibernate:
+      naming:
+        // naming strategy를 hibernate꺼로 바꿔줘야 테이블명을 설정한 그대로 쓸 수 있다. 머니뭐니 서버페이지 트러블슈팅 1
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
 # JPA log
-logging:
-  level:
-    org:
-      hibernate:
+logging.level:
+    org.hibernate:
         SQL: DEBUG # 하이버네이터가 생성하고 실행하는 SQL을 확인할 수 있다.
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE # SQL에 바인딩되는 파라미터를 확인할 수 있다.
+        type.descriptor.sql.BasicBinder: TRACE # SQL에 바인딩되는 파라미터를 확인할 수 있다.
