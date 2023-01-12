@@ -73,12 +73,12 @@ public class UserController {
         if (!isRegexEmail(postUserReq.getEmail())) {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
-//        try {
-//            PostUserRes postUserRes = userService.createUser(postUserReq);
-//            return new BaseResponse<>(postUserRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
+        try {
+            PostUserRes postUserRes = userService.createUser(postUserReq);
+            return new BaseResponse<>(postUserRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
     /**
@@ -190,6 +190,10 @@ public class UserController {
             //같다면 유저네임 변경
   **************************************************************************
  */
+            int userIdxByJwt = jwtService.getUserIdx();
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getNickname());
             userService.modifyUserName(patchUserReq);
 
