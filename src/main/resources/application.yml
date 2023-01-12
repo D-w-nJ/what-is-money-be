@@ -16,7 +16,7 @@ spring:
   jpa:
     hibernate:
       naming:
-        // naming strategy를 hibernate꺼로 바꿔줘야 테이블명을 설정한 그대로 쓸 수 있다. 머니뭐니 서버페이지 트러블슈팅 1
+        # naming strategy를 hibernate꺼로 바꿔줘야 테이블명을 설정한 그대로 쓸 수 있다.
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
 # JPA log

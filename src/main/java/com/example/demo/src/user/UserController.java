@@ -73,12 +73,12 @@ public class UserController {
         if (!isRegexEmail(postUserReq.getEmail())) {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
-        try {
-            PostUserRes postUserRes = userService.createUser(postUserReq);
-            return new BaseResponse<>(postUserRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
+//        try {
+//            PostUserRes postUserRes = userService.createUser(postUserReq);
+//            return new BaseResponse<>(postUserRes);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
     }
 
     /**
@@ -139,6 +139,7 @@ public class UserController {
      * 회원 1명 조회 API
      * [GET] /users/:userIdx
      */
+    /*
     // Path-variable
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/app/users/:userIdx
@@ -153,7 +154,21 @@ public class UserController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
-
+    }*/
+    // 스프링데이터 JPA 사용하는 api로 변경
+    @ResponseBody
+    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/app/users/:userIdx
+    public BaseResponse<UserEntity> getUser(@PathVariable("userIdx") Long userIdx) {
+        // @PathVariable RESTful(URL)에서 명시된 파라미터({})를 받는 어노테이션, 이 경우 userId값을 받아옴.
+        //  null값 or 공백값이 들어가는 경우는 적용하지 말 것
+        //  .(dot)이 포함된 경우, .을 포함한 그 뒤가 잘려서 들어감
+        // Get Users
+        try {
+            UserEntity userEntity = userServiceV2.getUser(userIdx);
+            return new BaseResponse<>(userEntity);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
     /**

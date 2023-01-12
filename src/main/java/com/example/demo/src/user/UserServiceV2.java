@@ -24,4 +24,12 @@ public class UserServiceV2 {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public UserEntity getUser(Long userIdx) throws BaseException {
+        try {
+            return jpaUserRepository.findById(userIdx).orElseThrow(()->new BaseException(DATABASE_ERROR));
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
