@@ -74,29 +74,29 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
         try {
-            PostUserRes postUserRes = userService.createUser(postUserReq);
+            PostUserRes postUserRes = userServiceV2.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    /**
-     * 로그인 API
-     * [POST] /users/logIn
-     */
-    @ResponseBody
-    @PostMapping("/log-in")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
-        try {
-            // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
-            // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
-            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
-            return new BaseResponse<>(postLoginRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
-    }
+//    /**
+//     * 로그인 API
+//     * [POST] /users/logIn
+//     */
+//    @ResponseBody
+//    @PostMapping("/log-in")
+//    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
+//        try {
+//            // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
+//            // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
+//            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+//            return new BaseResponse<>(postLoginRes);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 
 
     /**
@@ -175,32 +175,32 @@ public class UserController {
      * 유저정보변경 API
      * [PATCH] /users/:userIdx
      */
-    @ResponseBody
-    @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyUserName(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
-        try {
-/**
-  *********** 해당 부분은 7주차 - JWT 수업 후 주석해체 해주세요!  ****************
-            //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            //같다면 유저네임 변경
-  **************************************************************************
- */
-            int userIdxByJwt = jwtService.getUserIdx();
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getNickname());
-            userService.modifyUserName(patchUserReq);
-
-            String result = "회원정보가 수정되었습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
+//    @ResponseBody
+//    @PatchMapping("/{userIdx}")
+//    public BaseResponse<String> modifyUserName(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+//        try {
+///**
+//  *********** 해당 부분은 7주차 - JWT 수업 후 주석해체 해주세요!  ****************
+//            //jwt에서 idx 추출.
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
+//            //같다면 유저네임 변경
+//  **************************************************************************
+// */
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
+//            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getNickname());
+//            userService.modifyUserName(patchUserReq);
+//
+//            String result = "회원정보가 수정되었습니다.";
+//            return new BaseResponse<>(result);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
+//    }
 }
