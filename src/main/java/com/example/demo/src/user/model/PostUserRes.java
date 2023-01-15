@@ -13,9 +13,4 @@ public class PostUserRes {
     private long userIdx;
 //    해당 부분은 7주차 - JWT 수업 후 주석해제 및 대체해주세요!
     private String jwt;
-
-    public PostUserRes(UserEntity userEntity) {
-        userIdx = userEntity.getId();
-        jwt = userEntity.getPassword();
-    }
 }

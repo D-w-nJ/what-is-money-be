@@ -23,4 +23,14 @@ public class UserEntity {
     private boolean alarm;
     private int status;
     private String image;
+
+    // 회원가입 (entity->DTO)
+    public PostUserRes toPostUserRes(String jwt) {
+        return new PostUserRes(id,jwt);
+    }
+
+    // 로그인 (entity -> DTO)
+    public PostLoginRes toPostLoginRes(String jwt) {
+        return new PostLoginRes(id, jwt);
+    }
 }
