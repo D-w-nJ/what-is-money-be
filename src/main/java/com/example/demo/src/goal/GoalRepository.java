@@ -6,5 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GoalRepository extends JpaRepository<GoalEntity, Long> {
 
-    CategoryEntity findByCategory_id(int category_id);
 }

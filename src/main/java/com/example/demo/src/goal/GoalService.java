@@ -3,6 +3,7 @@ package com.example.demo.src.goal;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.category.CategoryRepository;
 import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
@@ -20,11 +21,13 @@ public class GoalService {
     @Autowired
     private final GoalRepository goalRepository;
     @Autowired
+    private final CategoryRepository categoryRepository;
+    @Autowired
     private final JwtService jwtService;
 
     public void createGoal(MakeGoalReq makeGoalReq, int category_id) throws BaseException{
         try{
-            CategoryEntity categoryEntity = goalRepository.findByCategory_id(category_id);
+            CategoryEntity categoryEntity = categoryRepository.findByCategory_id(category_id);
             GoalEntity goalEntity = makeGoalReq.toEntity(categoryEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
         } catch (Exception exception){
