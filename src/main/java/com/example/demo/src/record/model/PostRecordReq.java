@@ -15,7 +15,7 @@ public class PostRecordReq {
     Long goalIdx;
     String date;
     boolean type;
-    int category;
+    Long category;
     int amount;
 
     public RecordEntity toEntity(UserEntity user, GoalEntity goal, CategoryEntity category) {

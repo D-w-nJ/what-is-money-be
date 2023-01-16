@@ -1,17 +1,14 @@
 package com.example.demo.src.record;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.category.CategoryRepository;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.record.model.*;
 import com.example.demo.src.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
-import java.util.Optional;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
