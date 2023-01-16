@@ -1,6 +1,7 @@
 package com.example.demo.src.category.model;
 
 import com.example.demo.src.goal.model.GoalEntity;
+import com.example.demo.src.user.model.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,10 @@ public class CategoryEntity {
 
     private String name;
     private int flag;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    private UserEntity user_id;
 
     @OneToMany(mappedBy = "category_id")
     private List<GoalEntity> goalEntities = new ArrayList<>();
