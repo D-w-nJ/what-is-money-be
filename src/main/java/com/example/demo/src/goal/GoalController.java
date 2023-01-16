@@ -29,7 +29,7 @@ public class GoalController {
 
     @ResponseBody
     @PostMapping("/createGoal/{category_id}")
-    public BaseResponse<MakeGoalRes> createGoal(@PathVariable("category_id") int category_id, @RequestBody MakeGoalReq makeGoalReq){
+    public BaseResponse<MakeGoalRes> createGoal(@PathVariable("category_id") Long category_id, @RequestBody MakeGoalReq makeGoalReq){
         try{
             goalService.createGoal(makeGoalReq, category_id);
             return new BaseResponse<>();

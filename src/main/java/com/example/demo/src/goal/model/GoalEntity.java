@@ -17,7 +17,7 @@ public class GoalEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // pk 생성값을 데이터베이스에서 생성하는 IDENTITY 방식을 사용한다.
     private Long id;
     private String image; // 목표 이미지
-    private String goal_amount; // 목표 금액
+    private int goal_amount; // 목표 금액
     private int amount; // 현재 금액
     private float progress; // 진행률 퍼센트
 
