@@ -1,7 +1,10 @@
 
 package com.example.demo.src.goal.model;
 
+import com.example.demo.src.category.model.CategoryEntity;
+import com.example.demo.src.user.model.UserEntity;
 import lombok.*;
+import org.apache.catalina.User;
 
 import javax.persistence.*;
 
@@ -20,9 +23,15 @@ public class GoalEntity {
     private String goal_amount; // 목표 금액
     private int amount; // 현재 금액
     private float progress; // 진행률 퍼센트
-    private int category_id; // 외래키 : 어떤 카테코리에 속하는가?
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private CategoryEntity category_id; // 외래키 : 어떤 카테코리에 속하는가?
     private int init_amount; // 초기값 (촤초에 얼마나 돈을 들고있었는가?)
-    private int user_id; // 외래키 : 어떤 유저의 목표인가?
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private UserEntity user_id; // 외래키 : 어떤 유저의 목표인가?
 }
 
 /*
