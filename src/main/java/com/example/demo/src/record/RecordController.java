@@ -22,4 +22,24 @@ public class RecordController {
         this.jwtService = jwtService;
         this.recordService = recordService;
     }
+
+    /**
+     * 기록 추가 API
+     * [POST] /records
+     */
+    @ResponseBody
+    @PostMapping("/records")
+    public BaseResponse<PostRecordRes> createRecord(@RequestBody PostRecordReq postRecordReq) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (postRecordReq.getUserIdx() != userIdxByJwt) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+
+            PostRecordRes postRecordRes = recordService.createRecord(postRecordReq);
+            return new BaseResponse<>(postRecordRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>((e.getStatus()));
+        }
+    }
 }

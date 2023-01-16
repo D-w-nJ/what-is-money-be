@@ -28,4 +28,8 @@ public class RecordEntity {
     private UserEntity user;
     @ManyToOne @JoinColumn(name="goal_id",referencedColumnName = "id")
     private GoalEntity goal;
+
+    public PostRecordRes toPostRecordRes() {
+        return new PostRecordRes(user.getId(),goal.getId(),category.getId());
+    }
 }
