@@ -5,6 +5,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.category.CategoryRepository;
 import com.example.demo.src.category.model.CategoryEntity;
+import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
 import com.example.demo.utils.JwtService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,11 +29,11 @@ public class GoalService {
     @Autowired
     private final JwtService jwtService;
 
-    public void createGoal(MakeGoalReq makeGoalReq, Long category_id) throws BaseException{
+    public void createGoal(MakeGoalReq makeGoalReq, Long categoryIdx) throws BaseException{
         try{
             // Optional<CategoryEntity> categoryEntity = categoryRepository.findById(category_id);
-            CategoryEntity categoryEntity = categoryRepository.findById(category_id).get();
-            System.out.println("=====qweqw=eqw=eqw=e===");
+            // CategoryEntity categoryEntity = categoryRepository.findById(categoryIdx).get();
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
 
             String image = makeGoalReq.getImage();
             int goal_amount = makeGoalReq.getGoal_amount();
@@ -39,23 +41,17 @@ public class GoalService {
             GoalEntity goalEntity = makeGoalReq.toEntity(image, goal_amount, init_amount, categoryEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
         } catch (Exception exception){
-            System.out.println("=========================================");
-            System.out.println(exception.getMessage());
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
-    /*
-    public PostRecordRes createRecord(PostRecordReq postRecordReq) throws BaseException {
-        try {
-            RecordEntity record = postRecordReq.toEntity(
-                    userRepository.findById(postRecordReq.getUserIdx()).orElse(null),
-                    goalRepository.findById(postRecordReq.getGoalIdx()).orElse(null),
-                    categoryRepository.findById(postRecordReq.getCategory()).orElse(null));
-            recordRepository.save(record);
-            return record.toPostRecordRes();
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+
+    public List<GoalEntity> getGoalResList(int userIdx) throws BaseException{
+        try{
+            List<GoalEntity> getGoalResList = goalRepository.findByUser_id(userIdx);
+            return getGoalResList;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
-     */
+
 }

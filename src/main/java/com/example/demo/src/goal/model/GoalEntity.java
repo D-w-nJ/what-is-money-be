@@ -21,6 +21,8 @@ public class GoalEntity {
     private int amount; // 현재 금액
     private float progress; // 진행률 퍼센트
 
+    // name : 맵핑할 외래키의 이름
+    // referencedColumnName : 외래키가 참조하는 대상 태이블의 실제 pk 이름
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryIdx",referencedColumnName = "id")
     private CategoryEntity category_id; // 외래키 : 어떤 카테코리에 속하는가?

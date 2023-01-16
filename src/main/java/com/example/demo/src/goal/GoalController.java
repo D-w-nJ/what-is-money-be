@@ -2,15 +2,18 @@ package com.example.demo.src.goal;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.goal.model.GetGoalRes;
+import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
 import com.example.demo.src.goal.model.MakeGoalRes;
-import com.example.demo.src.user.UserService;
 import com.example.demo.utils.JwtService;
-import jdk.internal.net.http.common.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/goal")
@@ -33,6 +36,21 @@ public class GoalController {
         try{
             goalService.createGoal(makeGoalReq, category_id);
             return new BaseResponse<>();
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/getGoalList/{userIdx}")
+    public BaseResponse<List<GoalEntity>> getGoalList(@PathVariable("userIdx") Long userIdx){
+        try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            List<GoalEntity> getGoalRes = goalService.getGoalResList(jwtServiceUserIdx);
+            return new BaseResponse<>(getGoalRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
