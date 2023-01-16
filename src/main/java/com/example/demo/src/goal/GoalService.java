@@ -27,7 +27,7 @@ public class GoalService {
 
     public void createGoal(MakeGoalReq makeGoalReq, int category_id) throws BaseException{
         try{
-            CategoryEntity categoryEntity = categoryRepository.findByCategory_id(category_id);
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(category_id);
             GoalEntity goalEntity = makeGoalReq.toEntity(categoryEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
         } catch (Exception exception){

@@ -21,6 +21,7 @@ public class RecordEntity {
 
     private int amount;
     private boolean flag; //0:저축, 1: 지출
+    private String date;
 
     @ManyToOne @JoinColumn(name="category_id",referencedColumnName = "id")
     private CategoryEntity category;
@@ -30,6 +31,6 @@ public class RecordEntity {
     private GoalEntity goal;
 
     public PostRecordRes toPostRecordRes() {
-        return new PostRecordRes(user.getId(),goal.getId(),category.getId());
+        return new PostRecordRes(user.getId(),goal.getId(),date,category.getCategoryIdx());
     }
 }

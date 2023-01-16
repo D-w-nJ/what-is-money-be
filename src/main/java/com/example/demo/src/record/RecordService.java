@@ -2,6 +2,7 @@ package com.example.demo.src.record;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.category.CategoryRepository;
+import com.example.demo.src.goal.GoalRepository;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.record.model.*;
 import com.example.demo.src.user.UserRepository;
@@ -25,9 +26,9 @@ public class RecordService {
     public PostRecordRes createRecord(PostRecordReq postRecordReq) throws BaseException {
         try {
             RecordEntity record = postRecordReq.toEntity(
-                    userRepository.findById(postRecordReq.getUserIdx()),
-                    goalRepository.findById(postRecordReq.getGoalIdx()),
-                    categoryRepository.findById(postRecordReq.getCategory()));
+                    userRepository.findById(postRecordReq.getUserIdx()).orElse(null),
+                    goalRepository.findById(postRecordReq.getGoalIdx()).orElse(null),
+                    categoryRepository.findById(postRecordReq.getCategory()).orElse(null));
             recordRepository.save(record);
             return record.toPostRecordRes();
         } catch (Exception e) {
@@ -37,11 +38,8 @@ public class RecordService {
 
     public DeleteRecordRes deleteRecord(DeleteRecordReq deleteRecordReq) throws BaseException {
         try {
-            RecordEntity record = recordRepository.findById(deleteRecordReq.getRecordIdx()).orElse(null);
-            GoalEntity goal = goalRepository.findById(record.getId());
             recordRepository.deleteById(deleteRecordReq.getRecordIdx());
-            Long numOfRecordLeft = recordRepository.CountByUserAndGoal(deleteRecordReq.getUserIdx(),goal.getId());
-            return new DeleteRecordRes(deleteRecordReq.getUserIdx(), numOfRecordLeft);
+            return new DeleteRecordRes(deleteRecordReq.getUserIdx());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
