@@ -2,7 +2,6 @@ package com.example.demo.src.record.model;
 
 import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GoalEntity;
-import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.model.UserEntity;
 import lombok.*;
 

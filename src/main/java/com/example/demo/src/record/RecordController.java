@@ -3,9 +3,12 @@ package com.example.demo.src.record;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.record.model.DeleteRecordReq;
+import com.example.demo.src.record.model.DeleteRecordRes;
 import com.example.demo.src.record.model.PostRecordReq;
 import com.example.demo.src.record.model.PostRecordRes;
 import com.example.demo.utils.JwtService;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +38,27 @@ public class RecordController {
             if (postRecordReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-
             PostRecordRes postRecordRes = recordService.createRecord(postRecordReq);
             return new BaseResponse<>(postRecordRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>((e.getStatus()));
+        }
+    }
+
+    /**
+     * 기록 삭제 API
+     * [DELETE] /records
+     */
+    @ResponseBody
+    @DeleteMapping("/records")
+    public BaseResponse<DeleteRecordRes> deleteRecord(@RequestBody DeleteRecordReq deleteRecordReq) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (deleteRecordReq.getUserIdx() != userIdxByJwt) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            DeleteRecordRes deleteRecordRes = recordService.deleteRecord(deleteRecordReq);
+            return new BaseResponse<>(deleteRecordRes);
         } catch (BaseException e) {
             return new BaseResponse<>((e.getStatus()));
         }
