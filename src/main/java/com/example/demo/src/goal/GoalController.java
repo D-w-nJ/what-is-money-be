@@ -47,13 +47,13 @@ public class GoalController {
 
     @ResponseBody
     @GetMapping("/getGoalList/{userIdx}")
-    public BaseResponse<List<GoalEntity>> getGoalList(@PathVariable("userIdx") Long userIdx){
+    public BaseResponse<List<GetGoalRes>> getGoalList(@PathVariable("userIdx") Long userIdx){
         try{
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            List<GoalEntity> getGoalRes = goalService.getGoalResList(userIdx);
+            List<GetGoalRes> getGoalRes = goalService.getGoalResList(userIdx);
             System.out.println("========================================================");
             System.out.println(getGoalRes);
             System.out.println("========================================================");

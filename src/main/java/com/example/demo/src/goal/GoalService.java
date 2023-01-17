@@ -51,23 +51,13 @@ public class GoalService {
     }
 
 
-    public List<GoalEntity> getGoalResList(Long userIdx) throws BaseException{
+    public List<GetGoalRes> getGoalResList(Long userIdx) throws BaseException{
         try{
-            System.out.println("==============");
-            System.out.println(userIdx);
-            UserEntity userEntity = userRepository.findUserEntityById(userIdx);
-            System.out.println(userEntity);
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println(userEntity);
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            List<GoalEntity> getGoalResList = goalRepository.findGoalEntities(userEntity);
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalList(userEntity);
             System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
             System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
             System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-
             return getGoalResList;
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
