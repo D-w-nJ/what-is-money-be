@@ -42,7 +42,7 @@ public class GoalController {
     }
 
     @ResponseBody
-    @PostMapping("/getGoalList/{userIdx}")
+    @GetMapping("/getGoalList/{userIdx}")
     public BaseResponse<List<GoalEntity>> getGoalList(@PathVariable("userIdx") Long userIdx){
         try{
             int jwtServiceUserIdx = jwtService.getUserIdx();

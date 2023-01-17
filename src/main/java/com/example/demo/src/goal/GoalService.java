@@ -8,6 +8,8 @@ import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
+import com.example.demo.src.user.UserRepository;
+import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class GoalService {
 
     @Autowired
@@ -28,12 +29,17 @@ public class GoalService {
     private final CategoryRepository categoryRepository;
     @Autowired
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
+
+    @Transactional
     public void createGoal(MakeGoalReq makeGoalReq, Long categoryIdx) throws BaseException{
         try{
+            System.out.println("=====================================================================");
             // Optional<CategoryEntity> categoryEntity = categoryRepository.findById(category_id);
             // CategoryEntity categoryEntity = categoryRepository.findById(categoryIdx).get();
             CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
+            System.out.println("2=======================================================");
 
             String image = makeGoalReq.getImage();
             int goal_amount = makeGoalReq.getGoal_amount();
@@ -48,7 +54,10 @@ public class GoalService {
 
     public List<GoalEntity> getGoalResList(Long userIdx) throws BaseException{
         try{
-            List<GoalEntity> getGoalResList = goalRepository.findGoalEntityByUser_id(userIdx);
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+            System.out.println(userEntity);
+            List<GoalEntity> getGoalResList = goalRepository.findGoalEntities(userEntity);
+
             return getGoalResList;
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
