@@ -91,4 +91,16 @@ public class GoalService {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
+
+    public GetGoalRes getGoalRes(Long userIdx, Long goalIdx) throws BaseException{
+        try{
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            GetGoalRes getGoalRes = goalRepository.findGoal(userIdx, goalIdx);
+            return getGoalRes;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
 }
+
+
