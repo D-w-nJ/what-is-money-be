@@ -90,4 +90,19 @@ public class GoalController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    @ResponseBody
+    @GetMapping("/sortGoalByDesc/{userIdx}")
+    public BaseResponse<List<GetGoalRes>> sortGoalByDesc(@PathVariable("userIdx") Long userIdx){
+        try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            List<GetGoalRes> getGoalRes = goalService.getGoalResListDesc(userIdx);
+            return new BaseResponse<>(getGoalRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
