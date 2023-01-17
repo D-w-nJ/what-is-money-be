@@ -61,4 +61,7 @@ public class GoalService {
         }
     }
 
+    public void deleteGoal(){
+
+    }
 }
