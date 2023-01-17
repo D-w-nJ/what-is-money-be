@@ -33,18 +33,17 @@ public class GoalService {
 
 
     @Transactional
-    public void createGoal(MakeGoalReq makeGoalReq, Long categoryIdx) throws BaseException{
+    public void createGoal(MakeGoalReq makeGoalReq, Long categoryIdx, Long userIdx) throws BaseException{
         try{
-            System.out.println("=====================================================================");
             // Optional<CategoryEntity> categoryEntity = categoryRepository.findById(category_id);
             // CategoryEntity categoryEntity = categoryRepository.findById(categoryIdx).get();
             CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
-            System.out.println("2=======================================================");
+            UserEntity userEntity = userRepository.findById(userIdx).get();
 
             String image = makeGoalReq.getImage();
             int goal_amount = makeGoalReq.getGoal_amount();
             int init_amount = makeGoalReq.getInit_amount();
-            GoalEntity goalEntity = makeGoalReq.toEntity(image, goal_amount, init_amount, categoryEntity);
+            GoalEntity goalEntity = makeGoalReq.toEntity(image, goal_amount, init_amount, categoryEntity, userEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);

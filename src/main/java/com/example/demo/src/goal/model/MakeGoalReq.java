@@ -1,6 +1,7 @@
 package com.example.demo.src.goal.model;
 
 import com.example.demo.src.category.model.CategoryEntity;
+import com.example.demo.src.user.model.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,12 +27,13 @@ public class MakeGoalReq {
                 .build();
     }
 
-    public GoalEntity toEntity(String image, int goalAmount, int initAmount, CategoryEntity categoryEntity) {
+    public GoalEntity toEntity(String image, int goalAmount, int initAmount, CategoryEntity categoryEntity, UserEntity userEntity) {
         return GoalEntity.builder()
                 .image(image)
                 .goal_amount(goalAmount)
                 .init_amount(initAmount)
                 .category_id(categoryEntity)
+                .user_id(userEntity)
                 .build();
     }
 }
