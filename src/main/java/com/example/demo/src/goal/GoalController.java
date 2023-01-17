@@ -54,11 +54,6 @@ public class GoalController {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
             List<GetGoalRes> getGoalRes = goalService.getGoalResList(userIdx);
-            System.out.println("========================================================");
-            System.out.println(getGoalRes);
-            System.out.println("========================================================");
-            System.out.println("========================================================");
-            System.out.println("========================================================");
             return new BaseResponse<>(getGoalRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());

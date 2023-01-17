@@ -18,11 +18,14 @@ public class GetGoalRes {
     private float progress;
     // private UserEntity userEntity;
 
+    // private Long userIdx;
+
     public GetGoalRes(Long id, String image, int goal_amount, int amount, float progress){
         this.id = id;
         this.image = image;
         this.goal_amount = goal_amount;
         this.amount = amount;
         this.progress = progress;
+        // this.userIdx = userIdx;
     }
 }

@@ -54,10 +54,7 @@ public class GoalService {
     public List<GetGoalRes> getGoalResList(Long userIdx) throws BaseException{
         try{
             UserEntity userEntity = userRepository.findById(userIdx).get();
-            List<GetGoalRes> getGoalResList = goalRepository.findGoalList(userEntity);
-            System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalList(userIdx);
             return getGoalResList;
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
