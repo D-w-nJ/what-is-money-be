@@ -49,10 +49,11 @@ public class GoalController {
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            List<GoalEntity> getGoalRes = goalService.getGoalResList(jwtServiceUserIdx);
+            List<GoalEntity> getGoalRes = goalService.getGoalResList(userIdx);
             return new BaseResponse<>(getGoalRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
 }
