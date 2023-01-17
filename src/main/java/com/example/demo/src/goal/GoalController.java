@@ -68,9 +68,25 @@ public class GoalController {
             if(jwtServiceUserIdx != userIdx){
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            goalService.deleteGoal();
+            goalService.deleteGoal(goalIdx);
             return new BaseResponse();
         } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+
+    @ResponseBody
+    @GetMapping("/sortGoalByAsc/{userIdx}")
+    public BaseResponse<List<GetGoalRes>> sortGoalByAsc(@PathVariable("userIdx") Long userIdx){
+        try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            List<GetGoalRes> getGoalRes = goalService.getGoalResListAsc(userIdx);
+            return new BaseResponse<>(getGoalRes);
+        } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
     }

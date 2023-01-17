@@ -13,6 +13,8 @@ import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +55,7 @@ public class GoalService {
 
     public List<GetGoalRes> getGoalResList(Long userIdx) throws BaseException{
         try{
-            UserEntity userEntity = userRepository.findById(userIdx).get();
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
             List<GetGoalRes> getGoalResList = goalRepository.findGoalList(userIdx);
             return getGoalResList;
         } catch (Exception exception){
@@ -61,7 +63,22 @@ public class GoalService {
         }
     }
 
-    public void deleteGoal(){
+    public void deleteGoal(Long goalIdx) throws BaseException{
+        try{
+            goalRepository.deleteById(goalIdx);
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
 
+    // 오름차순 정렬
+    public List<GetGoalRes> getGoalResListAsc(Long userIdx) throws BaseException{
+        try{
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
+            return getGoalResList;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
     }
 }
