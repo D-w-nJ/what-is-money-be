@@ -1,8 +1,11 @@
 package com.example.demo.src.user.model;
 
+import com.example.demo.src.goal.model.GoalEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity //JPA가 사용하는 객체라는 뜻이다. 이 어노테이션이 있어야 JPA가 인식할 수 있다.
 @Table(name = "user")
@@ -23,6 +26,14 @@ public class UserEntity {
     private boolean alarm;
     private int status;
     private String image;
+
+    @OneToMany(mappedBy = "user_id")
+    private List<GoalEntity> goalEntityList = new ArrayList<>();
+
+    /*
+     @OneToMany(mappedBy = "category_id")
+    private List<GoalEntity> goalEntities = new ArrayList<>();
+     */
 
     // 회원가입 (entity->DTO)
     public PostUserRes toPostUserRes(String jwt) {
