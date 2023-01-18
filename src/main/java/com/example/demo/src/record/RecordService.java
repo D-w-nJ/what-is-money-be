@@ -3,7 +3,6 @@ package com.example.demo.src.record;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.category.CategoryRepository;
 import com.example.demo.src.goal.GoalRepository;
-import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.record.model.*;
 import com.example.demo.src.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +35,9 @@ public class RecordService {
         }
     }
 
-    public DeleteRecordRes deleteRecord(DeleteRecordReq deleteRecordReq) throws BaseException {
+    public void deleteRecord(DeleteRecordReq deleteRecordReq) throws BaseException {
         try {
             recordRepository.deleteById(deleteRecordReq.getRecordIdx());
-            return new DeleteRecordRes(deleteRecordReq.getUserIdx());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
