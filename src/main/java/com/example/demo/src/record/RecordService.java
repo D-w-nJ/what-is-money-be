@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -38,6 +43,26 @@ public class RecordService {
     public void deleteRecord(DeleteRecordReq deleteRecordReq) throws BaseException {
         try {
             recordRepository.deleteById(deleteRecordReq.getRecordIdx());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetRecordRes getRecords(GetRecordReq getRecordReq) throws BaseException {
+        try {
+            String date = getRecordReq.getDate().substring(0, getRecordReq.getDate().indexOf(" "));
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime dayStart = LocalDateTime.parse(date+" 00:00:00",format);
+            LocalDateTime dayEnd = LocalDateTime.parse(date+" 23:59:59",format);
+            List<RecordEntity> records = recordRepository.findAllByDateBetweenAndUserAndGoal(
+                    dayStart, dayEnd,
+                    userRepository.findById(getRecordReq.getUserIdx()).orElse(null),
+                    goalRepository.findById(getRecordReq.getGoalIdx()).orElse(null)
+            );
+            List<RecordByDate> collect = records.stream()
+                    .map(m->new RecordByDate(m.getId(),m.isFlag(),m.getCategory().getCategory_name(),m.getAmount()))
+                    .collect(Collectors.toList());
+            return new GetRecordRes(date, collect);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

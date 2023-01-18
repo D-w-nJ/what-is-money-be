@@ -33,7 +33,6 @@ public class RecordEntity {
     private GoalEntity goal;
 
     public PostRecordRes toPostRecordRes() {
-
         return new PostRecordRes(user.getId(),goal.getId(),
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 category.getCategoryIdx());
