@@ -8,11 +8,14 @@ import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
+import com.example.demo.src.goal.model.ModifyGoalReq;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,27 +54,71 @@ public class GoalService {
     }
 
 
-    public List<GoalEntity> getGoalResList(Long userIdx) throws BaseException{
+    public List<GetGoalRes> getGoalResList(Long userIdx) throws BaseException{
         try{
-            System.out.println("==============");
-            System.out.println(userIdx);
-            UserEntity userEntity = userRepository.findUserEntityById(userIdx);
-            System.out.println(userEntity);
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println(userEntity);
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            List<GoalEntity> getGoalResList = goalRepository.findGoalEntities(userEntity);
-            System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-            System.out.println("2222=============================ojqiwejioqwejioqwjeioqwjioejwqoieqwe");
-
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalList(userIdx);
             return getGoalResList;
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
 
+    public void deleteGoal(Long goalIdx) throws BaseException{
+        try{
+            goalRepository.deleteById(goalIdx);
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    // 오름차순 정렬
+    public List<GetGoalRes> getGoalResListAsc(Long userIdx) throws BaseException{
+        try{
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
+            return getGoalResList;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    public List<GetGoalRes> getGoalResListDesc(Long userIdx) throws BaseException{
+        try{
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByDesc(userIdx);
+            return getGoalResList;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    public GetGoalRes getGoalRes(Long userIdx, Long goalIdx) throws BaseException{
+        try{
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            GetGoalRes getGoalRes = goalRepository.findGoal(userIdx, goalIdx);
+            return getGoalRes;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    @Transactional
+    public void modifyGoal(Long goalIdx, Long userIdx, ModifyGoalReq modifyGoalReq) throws BaseException{
+        try{
+             int goalAmount = modifyGoalReq.getGoal_amount();
+             int initAmount =  modifyGoalReq.getInit_amount();
+             Long categoryIdx = modifyGoalReq.getCategoryIdx();
+             String goalImage = modifyGoalReq.getImage();
+
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+
+            goalRepository.updateGoal(goalAmount, initAmount, categoryEntity, userEntity, goalIdx);
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
 }
+
+
