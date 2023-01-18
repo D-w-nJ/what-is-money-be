@@ -8,6 +8,7 @@ import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
+import com.example.demo.src.goal.model.ModifyGoalReq;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
@@ -97,6 +98,23 @@ public class GoalService {
             // UserEntity userEntity = userRepository.findById(userIdx).get();
             GetGoalRes getGoalRes = goalRepository.findGoal(userIdx, goalIdx);
             return getGoalRes;
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    @Transactional
+    public void modifyGoal(Long goalIdx, Long userIdx, ModifyGoalReq modifyGoalReq) throws BaseException{
+        try{
+             int goalAmount = modifyGoalReq.getGoal_amount();
+             int initAmount =  modifyGoalReq.getInit_amount();
+             Long categoryIdx = modifyGoalReq.getCategoryIdx();
+             String goalImage = modifyGoalReq.getImage();
+
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+
+            goalRepository.updateGoal(goalAmount, initAmount, categoryEntity, userEntity, goalIdx);
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
