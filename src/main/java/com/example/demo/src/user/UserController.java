@@ -76,16 +76,16 @@ public class UserController {
 
     }
 
-//    /**
-//     * 아이디중복확인
-//     * [GET] /users/idcheck
-//     * */
+    /**
+     * 아이디중복확인
+     * [GET] /users/idcheck
+     * */
 //    @ResponseBody
-//    @GetMapping("/idcheck")
+//    @GetMapping("/idCheck")
 //    public BaseResponse<GetIdCheckReq> idCheck(@RequestBody GetIdCheckReq getIdCheckReq){
 //        try {
-//            PostUserRes postUserRes = userService.(getIdCheckReq);
-//            return new BaseResponse<>(postUserRes);
+//            GetIdCheckRes getIdCheckRes = userService.idCheck(getIdCheckReq);
+//            return new BaseResponse<>(getIdCheckRes);
 //        } catch (BaseException exception) {
 //            return new BaseResponse<>((exception.getStatus()));
 //        }

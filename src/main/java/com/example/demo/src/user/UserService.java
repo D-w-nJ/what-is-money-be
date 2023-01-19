@@ -49,15 +49,19 @@ public class UserService {
 
     //아이디중복확인
 //    public GetIdCheckRes idCheck(GetIdCheckReq getIdCheckReq) throws BaseException{
+//
+//        // request 요청 파라미터로 넘어온 값 중 userid 를 가져와서 저장
+//        Long userid = getIdCheckReq.getId();
+//
 //        boolean result = false; //아이디 중복 체크를 확인하기 위한 변수
 //
 //        try {
-//            //System.out.println("userid : " + id);
+//            System.out.println("userid : " + userid);
 //
 //            // findById 로 DB에 아이디가 저장되어있는지 여부 확인
 //            // 만약 저장되어있다면 chkID 값에 DB에 있는 아이디가 찾아진 후 result = false
 //            // 아니면 데이터를 찾을 수 없어 에러가 발생할 것임
-//            String chkID = UserRepository.findUserEntityById(userid).get().getId();
+//            Long chkID = UserRepository.findUserEntityById(userid).get().getId();
 //            if (chkID.equals(userid)) {
 //                result = false;
 //                System.out.println("중복된 아이디 : " + result);
@@ -83,7 +87,7 @@ public class UserService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
         try {
-            UserEntity user = userRepository.findByEmail(postLoginReq.getEmail());
+            UserEntity user = userRepository.findById(postLoginReq.getId_str());
             user.setPassword(password);
             if (user.getPassword().equals(password)) { //비밀번호가 같다면
                 String jwt = jwtService.createJwt(user.getId());

@@ -19,6 +19,7 @@ public class UserEntity {
 
     //@Column을 사용할 경우 객체의 필드와 테이블의 컬럼을 매핑한다.
     //아래와 같이 @Column을 생략할 경우 필드의 이름을 테이블 컬럼 이름으로 사용한다.
+    private String id_str;
     private String password;
     private String name;
     private String email;
@@ -26,6 +27,7 @@ public class UserEntity {
     private boolean alarm;
     private int status;
     private String image;
+
 
     @OneToMany(mappedBy = "user_id")
     private List<GoalEntity> goalEntityList = new ArrayList<>();
@@ -37,7 +39,7 @@ public class UserEntity {
 
     // 회원가입 (entity->DTO)
     public PostUserRes toPostUserRes() {
-        return new PostUserRes(id,agree);
+        return new PostUserRes(agree, id_str);
     }
 
     // 로그인 (entity -> DTO)

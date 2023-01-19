@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetIdCheckReq {
-    private int id;
+    private Long id;
 }
