@@ -39,7 +39,7 @@ public class RecordEntity {
     public PostRecordRes toPostRecordRes() {
         return new PostRecordRes(user.getId(), goal.getId(),
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                category.getCategoryIdx());
+                id);
     }
 
     public void update(int amount, CategoryEntity category, LocalDateTime date, boolean type) {
