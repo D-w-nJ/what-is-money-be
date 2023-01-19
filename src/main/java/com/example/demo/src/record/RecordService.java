@@ -1,11 +1,13 @@
 package com.example.demo.src.record;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.category.CategoryRepository;
 import com.example.demo.src.goal.GoalRepository;
 import com.example.demo.src.record.model.*;
 import com.example.demo.src.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -62,7 +64,7 @@ public class RecordService {
         }
     }
 
-    public GetRecordRes getRecords(GetRecordReq getRecordReq) throws BaseException {
+    public GetRecordRes getDailyRecords(GetRecordReq getRecordReq) throws BaseException {
         try {
             String date = getRecordReq.getDate().substring(0, getRecordReq.getDate().indexOf(" "));
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -71,7 +73,8 @@ public class RecordService {
             List<RecordEntity> records = recordRepository.findAllByDateBetweenAndUserAndGoal(
                     dayStart, dayEnd,
                     userRepository.findById(getRecordReq.getUserIdx()).orElse(null),
-                    goalRepository.findById(getRecordReq.getGoalIdx()).orElse(null)
+                    goalRepository.findById(getRecordReq.getGoalIdx()).orElse(null),
+                    Sort.by(Sort.Direction.ASC,"date")
             );
             List<RecordByDate> collect = records.stream()
                     .map(m -> new RecordByDate(m.getId(), m.isFlag(), m.getCategory().getCategory_name(), m.getAmount()))
