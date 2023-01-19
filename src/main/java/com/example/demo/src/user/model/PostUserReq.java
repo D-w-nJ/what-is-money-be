@@ -10,12 +10,14 @@ public class PostUserReq {
     private String password;
     private String name;
     private String email;
+    private boolean agree;
 
     public UserEntity toEntity() {
         return UserEntity.builder()
                 .password(password)
                 .name(name)
                 .email(email)
+                .agree(agree)
                 .build();
     }
 }

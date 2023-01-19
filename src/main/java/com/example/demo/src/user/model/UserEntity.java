@@ -36,8 +36,8 @@ public class UserEntity {
      */
 
     // 회원가입 (entity->DTO)
-    public PostUserRes toPostUserRes(String jwt) {
-        return new PostUserRes(id,jwt);
+    public PostUserRes toPostUserRes() {
+        return new PostUserRes(id,agree);
     }
 
     // 로그인 (entity -> DTO)

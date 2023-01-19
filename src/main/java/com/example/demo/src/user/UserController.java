@@ -73,7 +73,23 @@ public class UserController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+
     }
+
+//    /**
+//     * 아이디중복확인
+//     * [GET] /users/idcheck
+//     * */
+//    @ResponseBody
+//    @GetMapping("/idcheck")
+//    public BaseResponse<GetIdCheckReq> idCheck(@RequestBody GetIdCheckReq getIdCheckReq){
+//        try {
+//            PostUserRes postUserRes = userService.(getIdCheckReq);
+//            return new BaseResponse<>(postUserRes);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
+//    }
 
     /**
      * 로그인 API

@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
@@ -19,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+
 
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
 //        if (userProvider.checkEmail(postUserReq.getEmail()) == 1) {
@@ -36,12 +41,36 @@ public class UserService {
         try {
             UserEntity userEntity = postUserReq.toEntity();   // DTO -> Entity 변환
             userRepository.save(userEntity);   // 유저 DB에 저장
-            String jwt = jwtService.createJwt(userEntity.getId());
-            return userEntity.toPostUserRes(jwt);    // Entity -> DTO 변환
+            return userEntity.toPostUserRes();    // Entity -> DTO 변환
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    //아이디중복확인
+//    public GetIdCheckRes idCheck(GetIdCheckReq getIdCheckReq) throws BaseException{
+//        boolean result = false; //아이디 중복 체크를 확인하기 위한 변수
+//
+//        try {
+//            //System.out.println("userid : " + id);
+//
+//            // findById 로 DB에 아이디가 저장되어있는지 여부 확인
+//            // 만약 저장되어있다면 chkID 값에 DB에 있는 아이디가 찾아진 후 result = false
+//            // 아니면 데이터를 찾을 수 없어 에러가 발생할 것임
+//            String chkID = UserRepository.findUserEntityById(userid).get().getId();
+//            if (chkID.equals(userid)) {
+//                result = false;
+//                System.out.println("중복된 아이디 : " + result);
+//            }
+//
+//            // 데이터가 없어서 에러가 발생하면 try ~ catch 로 잡아서 중복된 아이디가 아닌것을 확인하고 result = true
+//        }catch (Exception e){
+//            result = true;
+//            System.out.println("중복된 아이디 아님 : "+ result);
+//        }
+//
+//    }
+
 
     //로그인(password 검사)
     public PostLoginRes login(PostLoginReq postLoginReq)throws BaseException {
