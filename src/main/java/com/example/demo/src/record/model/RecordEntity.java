@@ -18,23 +18,34 @@ import java.time.format.DateTimeFormatter;
 @Data
 public class RecordEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int amount;
     private boolean flag; //0:저축, 1: 지출
     private LocalDateTime date;
 
-    @ManyToOne @JoinColumn(name="category_id",referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryEntity category;
-    @ManyToOne @JoinColumn(name="user_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
-    @ManyToOne @JoinColumn(name="goal_id",referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "goal_id", referencedColumnName = "id")
     private GoalEntity goal;
 
     public PostRecordRes toPostRecordRes() {
-        return new PostRecordRes(user.getId(),goal.getId(),
+        return new PostRecordRes(user.getId(), goal.getId(),
                 date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 category.getCategoryIdx());
+    }
+
+    public void update(int amount, CategoryEntity category, LocalDateTime date, boolean type) {
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+        this.flag = type;
     }
 }

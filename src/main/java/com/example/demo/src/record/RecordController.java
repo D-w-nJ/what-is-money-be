@@ -61,6 +61,25 @@ public class RecordController {
     }
 
     /**
+     * 기록 수정 API
+     * [PATCH] /records
+     */
+    @ResponseBody
+    @PatchMapping("/records")
+    public BaseResponse<Long> patchRecord(@RequestBody PatchRecordReq patchRecordReq) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (patchRecordReq.getUserIdx() != userIdxByJwt) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            recordService.updateRecord(patchRecordReq);
+            return new BaseResponse<>(patchRecordReq.getRecordIdx());
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
      * 날짜별 기록조회 API
      * [GET] /records
      */

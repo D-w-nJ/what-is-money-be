@@ -48,19 +48,33 @@ public class RecordService {
         }
     }
 
+    public void updateRecord(PatchRecordReq patchRecordReq) throws BaseException {
+        try {
+            String date = patchRecordReq.getDate().substring(0, patchRecordReq.getDate().lastIndexOf(" "));
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            RecordEntity record = recordRepository.findById(patchRecordReq.getRecordIdx()).orElse(null);
+            record.update(patchRecordReq.getAmount(),
+                    categoryRepository.findById(patchRecordReq.getCategoryIdx()).orElse(null),
+                    LocalDateTime.parse(date, format),
+                    patchRecordReq.isType());
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     public GetRecordRes getRecords(GetRecordReq getRecordReq) throws BaseException {
         try {
             String date = getRecordReq.getDate().substring(0, getRecordReq.getDate().indexOf(" "));
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime dayStart = LocalDateTime.parse(date+" 00:00:00",format);
-            LocalDateTime dayEnd = LocalDateTime.parse(date+" 23:59:59",format);
+            LocalDateTime dayStart = LocalDateTime.parse(date + " 00:00:00", format);
+            LocalDateTime dayEnd = LocalDateTime.parse(date + " 23:59:59", format);
             List<RecordEntity> records = recordRepository.findAllByDateBetweenAndUserAndGoal(
                     dayStart, dayEnd,
                     userRepository.findById(getRecordReq.getUserIdx()).orElse(null),
                     goalRepository.findById(getRecordReq.getGoalIdx()).orElse(null)
             );
             List<RecordByDate> collect = records.stream()
-                    .map(m->new RecordByDate(m.getId(),m.isFlag(),m.getCategory().getCategory_name(),m.getAmount()))
+                    .map(m -> new RecordByDate(m.getId(), m.isFlag(), m.getCategory().getCategory_name(), m.getAmount()))
                     .collect(Collectors.toList());
             return new GetRecordRes(date, collect);
         } catch (Exception e) {
