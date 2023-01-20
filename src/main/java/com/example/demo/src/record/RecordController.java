@@ -8,6 +8,8 @@ import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("")
 public class RecordController {
@@ -81,17 +83,36 @@ public class RecordController {
 
     /**
      * 날짜별 기록조회 API
-     * [GET] /records
+     * [GET] /daily-records
      */
     @ResponseBody
-    @GetMapping("/records")
-    public BaseResponse<GetRecordRes> getRecords(@RequestBody GetRecordReq getRecordReq) {
+    @GetMapping("/daily-records")
+    public BaseResponse<GetRecordRes> getDailyRecords(@RequestBody GetRecordReq getRecordReq) {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             if (getRecordReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            GetRecordRes getRecordRes = recordService.getRecords(getRecordReq);
+            GetRecordRes getRecordRes = recordService.getDailyRecords(getRecordReq, false);
+            return new BaseResponse<>(getRecordRes);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 목표별 기록조회
+     * [GET] /records/{userIdx}/{goalIdx}
+     */
+    @GetMapping("/records/{userIdx}/{goalIdx}")
+    public BaseResponse<List<GetRecordRes>> getRecords(@PathVariable("userIdx") Long userIdx,
+                                                       @PathVariable("goalIdx") Long goalIdx, @RequestParam boolean type) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            List<GetRecordRes> getRecordRes = recordService.getRecords(userIdx, goalIdx, type);
             return new BaseResponse<>(getRecordRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
