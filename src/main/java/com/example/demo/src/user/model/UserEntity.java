@@ -27,6 +27,7 @@ public class UserEntity {
     private boolean alarm;
     private int status;
     private String image;
+    private boolean duplicate; //아이디중복확인
 
 
     @OneToMany(mappedBy = "user_id")

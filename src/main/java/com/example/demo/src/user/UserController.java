@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.goal.model.GetGoalRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -7,10 +8,11 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
@@ -78,16 +80,36 @@ public class UserController {
 
     /**
      * 아이디중복확인
-     * [GET] /users/idcheck
+     * [GET] /users/idCheck
      * */
+    @ResponseBody
+    @GetMapping("/idCheck/{id_str}")
+    public ResponseEntity<Boolean> checkIdDuplicate(@PathVariable String id_str){
+        return ResponseEntity.ok(userService.checkIdDuplicate(id_str));
+    }
 //    @ResponseBody
-//    @GetMapping("/idCheck")
-//    public BaseResponse<GetIdCheckReq> idCheck(@RequestBody GetIdCheckReq getIdCheckReq){
-//        try {
-//            GetIdCheckRes getIdCheckRes = userService.idCheck(getIdCheckReq);
+//    @GetMapping("/idCheck/{id_str}")
+//    public BaseResponse<GetIdCheckRes> idCheck(@PathVariable("id_str") String id_str){
+//        try{
+//            GetIdCheckRes getIdCheckRes = userService.getIdCheckRes(id_str);
+//            if(getIdCheckRes.getId_str() == id_str){
+//                return new BaseResponse<>(DUPLICATED_ID);
+//            }else{
+//                return new BaseResponse<>(SUCCESS);
+//            }
+//
+//        } catch(BaseException exception){
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//
+//    }
+
+//    public BaseResponse<List<GetIdCheckRes>> idCheck(@PathVariable("id") String id_str){
+//        try{
+//            List<GetIdCheckRes> getIdCheckRes = userService.idCheck(id_str);
 //            return new BaseResponse<>(getIdCheckRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
+//        } catch (BaseException exception){
+//            return new BaseResponse<>(exception.getStatus());
 //        }
 //    }
 
