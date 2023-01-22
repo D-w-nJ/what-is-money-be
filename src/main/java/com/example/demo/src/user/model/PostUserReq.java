@@ -13,7 +13,6 @@ public class PostUserReq {
     private String email;
     private boolean agree;
 
-
     public UserEntity toEntity() {
         return UserEntity.builder()
                 .id_str(id_str)

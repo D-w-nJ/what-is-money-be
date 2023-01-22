@@ -27,8 +27,6 @@ public class UserEntity {
     private boolean alarm;
     private int status;
     private String image;
-    private boolean duplicate; //아이디중복확인
-
 
     @OneToMany(mappedBy = "user_id")
     private List<GoalEntity> goalEntityList = new ArrayList<>();
@@ -40,7 +38,7 @@ public class UserEntity {
 
     // 회원가입 (entity->DTO)
     public PostUserRes toPostUserRes() {
-        return new PostUserRes(agree, id_str);
+        return new PostUserRes(id);
     }
 
     // 로그인 (entity -> DTO)

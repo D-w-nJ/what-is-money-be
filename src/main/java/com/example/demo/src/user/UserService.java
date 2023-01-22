@@ -1,22 +1,14 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.config.secret.Secret;
-import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -27,7 +19,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
-
 
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
 //        if (userProvider.checkEmail(postUserReq.getEmail()) == 1) {
@@ -51,40 +42,6 @@ public class UserService {
         }
     }
 
-    //아이디중복확인
-
-    public boolean checkIdDuplicate(String id_str){
-        return userRepository.existsByUserId(id_str);
-    }
-//    public GetIdCheckRes getIdCheckRes(String id_str) throws BaseException{
-//        try{
-//            GetIdCheckRes getIdCheckRes = userRepository.existsByUserId(id_str);
-//            return getIdCheckRes;
-//        }catch (Exception e){
-//            throw new BaseException(SERVER_ERROR);
-//        }
-//    }
-
-//    public List<GetIdCheckRes> idCheck(String id_str) throws BaseException{
-//        String userid = id_str;
-//
-//        try{
-//            List<GetIdCheckRes> getIdCheckRes = userRepository.CheckById(userid); //DB에 저장되어 있는 아이디 리스트로 받아오기
-//
-//
-//            if(getIdCheckRes.getId_str().equals(userid)){//아이디가 같다면
-//                throw new BaseException(DUPLICATED_ID);
-//            } else{
-//                throw new BaseException(SUCCESS);
-//            }
-//
-//        }catch (BaseException e){
-//            throw new BaseException(SUCCESS);
-//        }
-//
-//    }
-
-
     //로그인(password 검사)
     public PostLoginRes login(PostLoginReq postLoginReq)throws BaseException {
 
@@ -96,7 +53,7 @@ public class UserService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
         try {
-            UserEntity user = userRepository.findById(postLoginReq.getId_str());
+            UserEntity user = userRepository.findByEmail(postLoginReq.getEmail());
             user.setPassword(password);
             if (user.getPassword().equals(password)) { //비밀번호가 같다면
                 String jwt = jwtService.createJwt(user.getId());
