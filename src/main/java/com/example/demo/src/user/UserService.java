@@ -44,7 +44,6 @@ public class UserService {
 
     //로그인(password 검사)
     public PostLoginRes login(PostLoginReq postLoginReq)throws BaseException {
-
         String password;
         try {
             password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postLoginReq.getPassword()); //암호화
@@ -57,7 +56,7 @@ public class UserService {
             user.setPassword(password);
             if (user.getPassword().equals(password)) { //비밀번호가 같다면
                 String jwt = jwtService.createJwt(user.getId());
-                return user.toPostLoginRes(jwt);
+                return user.toPostLoginRes();
             } else {
                 throw new BaseException(FAILED_TO_LOGIN);
             }

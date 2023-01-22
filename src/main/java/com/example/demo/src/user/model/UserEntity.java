@@ -38,11 +38,11 @@ public class UserEntity {
 
     // 회원가입 (entity->DTO)
     public PostUserRes toPostUserRes() {
-        return new PostUserRes(id);
+        return new PostUserRes(id_str);
     }
 
     // 로그인 (entity -> DTO)
-    public PostLoginRes toPostLoginRes(String jwt) {
-        return new PostLoginRes(id, jwt);
+    public PostLoginRes toPostLoginRes() {
+        return new PostLoginRes(id_str);
     }
 }
