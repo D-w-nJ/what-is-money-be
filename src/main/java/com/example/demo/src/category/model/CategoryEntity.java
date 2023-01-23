@@ -28,8 +28,8 @@ public class CategoryEntity {
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private UserEntity user_id;
 
-    @OneToMany(mappedBy = "category_id")
-    private List<GoalEntity> goalEntities = new ArrayList<>();
+    //@OneToMany(mappedBy = "category_id")
+    // private List<GoalEntity> goalEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "category")
     private List<RecordEntity> recordEntities = new ArrayList<>();
