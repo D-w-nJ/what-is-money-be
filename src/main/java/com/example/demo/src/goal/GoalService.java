@@ -112,11 +112,12 @@ public class GoalService {
              int initAmount =  modifyGoalReq.getInit_amount();
              // Long categoryIdx = modifyGoalReq.getCategoryIdx();
              String goalImage = modifyGoalReq.getImage();
+             String category_name = modifyGoalReq.getCategory_name();
 
-            CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
+            // CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
             UserEntity userEntity = userRepository.findById(userIdx).get();
+            goalRepository.updateGoal(goalAmount, initAmount, category_name, userEntity, goalIdx);
 
-            goalRepository.updateGoal(goalAmount, initAmount, categoryEntity, userEntity, goalIdx);
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }

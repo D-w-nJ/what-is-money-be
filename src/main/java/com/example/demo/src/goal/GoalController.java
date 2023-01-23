@@ -58,7 +58,7 @@ public class GoalController {
     }
 
     @ResponseBody
-    @GetMapping("/deleteGoal/{goalIdx}/{userIdx}")
+    @DeleteMapping("/deleteGoal/{goalIdx}/{userIdx}")
     public BaseResponse deleteGoal(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();

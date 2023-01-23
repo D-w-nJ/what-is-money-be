@@ -25,6 +25,7 @@ public class MakeGoalReq {
                 .image(image)
                 .goal_amount(goal_amount)
                 .init_amount(init_amount)
+                .amount(init_amount) // amount 필드는 초기값(init_amount)으로 설정되도록
                 .category_name(category_name)
                 .build();
     }

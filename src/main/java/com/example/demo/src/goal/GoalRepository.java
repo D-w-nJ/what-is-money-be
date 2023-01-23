@@ -33,6 +33,7 @@ public interface GoalRepository extends JpaRepository<GoalEntity, Long> {
     List<GetGoalRes> findGoalListByDesc(@Param("userIdx") Long userIdx);
 
     @Modifying(clearAutomatically = true) // 카테고리, 목표금액, 초기금액, 사진
-    @Query("update GoalEntity m set m.goal_amount = :goalAmount, m.init_amount = :initAmount, m.category_id = :categoryEntity, m.user_id = :userEntity where m.id = :goalIdx")
-    void updateGoal(@Param("goalAmount") int goalAmount, @Param("initAmount") int initAmount, @Param("categoryEntity") CategoryEntity categoryEntity, @Param("userEntity") UserEntity userEntity, @Param("goalIdx") Long goalIdx);
+    @Query("update GoalEntity m set m.goal_amount = :goalAmount, m.init_amount = :initAmount, m.category_name = :category_name, m.user_id = :userEntity where m.id = :goalIdx")
+    void updateGoal(@Param("goalAmount") int goalAmount, @Param("initAmount") int initAmount, @Param("category_name") String category_name, @Param("userEntity") UserEntity userEntity, @Param("goalIdx") Long goalIdx);
+
 }
