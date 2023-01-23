@@ -28,7 +28,7 @@ public class GoalController {
     }
 
     @ResponseBody
-    @PostMapping("/createGoal/{categoryIdx}/{userIdx}")
+    @PostMapping("/createGoal/{userIdx}")
     public BaseResponse<MakeGoalRes> createGoal(@PathVariable("userIdx") Long userIdx, @RequestBody MakeGoalReq makeGoalReq) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
