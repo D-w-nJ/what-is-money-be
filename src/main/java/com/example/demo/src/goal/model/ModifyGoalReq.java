@@ -13,21 +13,22 @@ public class ModifyGoalReq {
     private String image;
     private int goal_amount;
     private int init_amount;
-    private Long categoryIdx;
 
-    public ModifyGoalReq(String image, int goal_amount, int init_amount, Long categoryIdx){
+    private String category_name;
+
+    public ModifyGoalReq(String image, int goal_amount, int init_amount, String category_name){
         this.image = image;
         this.goal_amount = goal_amount;
         this.init_amount = init_amount;
-        this.categoryIdx = categoryIdx;
+        this.category_name = category_name;
     }
 
-    public GoalEntity toEntity(String image, int goalAmount, int initAmount, CategoryEntity categoryEntity, UserEntity userEntity) {
+    public GoalEntity toEntity(String image, int goalAmount, int initAmount, String category_name, UserEntity userEntity) {
         return GoalEntity.builder()
                 .image(image)
                 .goal_amount(goalAmount)
                 .init_amount(initAmount)
-                .category_id(categoryEntity)
+                .category_name(category_name)
                 .user_id(userEntity)
                 .build();
     }

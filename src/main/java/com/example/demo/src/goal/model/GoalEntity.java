@@ -24,7 +24,7 @@ public class GoalEntity {
     // name : 맵핑할 외래키의 이름
     // referencedColumnName : 외래키가 참조하는 대상 태이블의 실제 pk 이름
 
-    private String category_id;
+    private String category_name;
 
     // @ManyToOne(fetch = FetchType.LAZY)
     // @JoinColumn(name = "category_id",referencedColumnName = "id")

@@ -36,17 +36,19 @@ public class GoalService {
 
 
     @Transactional
-    public void createGoal(MakeGoalReq makeGoalReq, Long categoryIdx, Long userIdx) throws BaseException{
+    public void createGoal(MakeGoalReq makeGoalReq, Long userIdx) throws BaseException{
         try{
             // Optional<CategoryEntity> categoryEntity = categoryRepository.findById(category_id);
             // CategoryEntity categoryEntity = categoryRepository.findById(categoryIdx).get();
-            CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
-            UserEntity userEntity = userRepository.findById(userIdx).get();
 
+            // CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
+            UserEntity userEntity = userRepository.findById(userIdx).get();
             String image = makeGoalReq.getImage();
             int goal_amount = makeGoalReq.getGoal_amount();
             int init_amount = makeGoalReq.getInit_amount();
-            GoalEntity goalEntity = makeGoalReq.toEntity(image, goal_amount, init_amount, categoryEntity, userEntity);
+            String category_name = makeGoalReq.getCategory_name();
+
+            GoalEntity goalEntity = makeGoalReq.toEntity(image, goal_amount, init_amount, category_name, userEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
@@ -108,7 +110,7 @@ public class GoalService {
         try{
              int goalAmount = modifyGoalReq.getGoal_amount();
              int initAmount =  modifyGoalReq.getInit_amount();
-             Long categoryIdx = modifyGoalReq.getCategoryIdx();
+             // Long categoryIdx = modifyGoalReq.getCategoryIdx();
              String goalImage = modifyGoalReq.getImage();
 
             CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);

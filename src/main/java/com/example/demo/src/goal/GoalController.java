@@ -29,13 +29,13 @@ public class GoalController {
 
     @ResponseBody
     @PostMapping("/createGoal/{categoryIdx}/{userIdx}")
-    public BaseResponse<MakeGoalRes> createGoal(@PathVariable("categoryIdx") Long category_id, @PathVariable("userIdx") Long userIdx, @RequestBody MakeGoalReq makeGoalReq) {
+    public BaseResponse<MakeGoalRes> createGoal(@PathVariable("userIdx") Long userIdx, @RequestBody MakeGoalReq makeGoalReq) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            goalService.createGoal(makeGoalReq, category_id, userIdx);
+            goalService.createGoal(makeGoalReq, userIdx);
             return new BaseResponse<>();
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
