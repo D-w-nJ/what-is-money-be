@@ -28,14 +28,14 @@ public class GoalController {
     }
 
     @ResponseBody
-    @PostMapping("/createGoal/{categoryIdx}/{userIdx}")
-    public BaseResponse<MakeGoalRes> createGoal(@PathVariable("categoryIdx") Long category_id, @PathVariable("userIdx") Long userIdx, @RequestBody MakeGoalReq makeGoalReq) {
+    @PostMapping("/createGoal/{userIdx}")
+    public BaseResponse<MakeGoalRes> createGoal(@PathVariable("userIdx") Long userIdx, @RequestBody MakeGoalReq makeGoalReq) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            goalService.createGoal(makeGoalReq, category_id, userIdx);
+            goalService.createGoal(makeGoalReq, userIdx);
             return new BaseResponse<>();
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
@@ -58,7 +58,7 @@ public class GoalController {
     }
 
     @ResponseBody
-    @GetMapping("/deleteGoal/{goalIdx}/{userIdx}")
+    @DeleteMapping("/deleteGoal/{goalIdx}/{userIdx}")
     public BaseResponse deleteGoal(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
