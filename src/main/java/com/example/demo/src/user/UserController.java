@@ -138,7 +138,7 @@ public class UserController {
      * */
     @ResponseBody
     @DeleteMapping("/deleteUser")
-    public BaseResponse<Long> deleteUser(@RequestBody DeleteUserReq deleteUserReq){
+    public BaseResponse<String> deleteUser(@RequestBody DeleteUserReq deleteUserReq){
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != deleteUserReq.getUserIdx()) {
@@ -146,8 +146,8 @@ public class UserController {
             }
             userService.deleteUser(deleteUserReq);
 
-            //String result = "회원정보가 탈퇴되었습니다.";
-            return new BaseResponse<>(deleteUserReq.getUserIdx());
+            String result = "회원정보가 탈퇴되었습니다.";
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
