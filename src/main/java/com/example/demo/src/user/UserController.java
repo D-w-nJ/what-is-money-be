@@ -95,23 +95,61 @@ public class UserController {
 
     /**
      * 유저정보변경 API
-     * [PATCH] /users/:userIdx
+     * [PATCH] /users/modifyUserId
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyUserName(@PathVariable("userIdx") Long userIdx, @RequestBody PatchUserIdReq patchUserIdReq) {
+    @PatchMapping("/modifyUserId")
+    public BaseResponse<String> modifyUserId(@RequestBody PatchUserIdReq patchUserIdReq) {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
-            if (userIdx != userIdxByJwt) {
+            if (patchUserIdReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
             //같다면 유저네임 변경
-            userService.modifyUserId(userIdx, patchUserIdReq);
+            userService.modifyUserId(patchUserIdReq);
 
             String result = "회원정보가 수정되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    @ResponseBody
+    @PatchMapping("/modifyPassword")
+    public BaseResponse<String> modifyPassword(@RequestBody PatchPasswordReq patchPasswordReq) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (patchPasswordReq.getUserIdx() != userIdxByJwt) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            //같다면 유저비밀번호 변경
+            userService.modifyPassword(patchPasswordReq);
+
+            String result = "회원정보가 수정되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 회원탈퇴 API
+     * [DELETE] /users/deleteUser
+     * */
+    @ResponseBody
+    @DeleteMapping("/deleteUser")
+    public BaseResponse<Long> deleteUser(@RequestBody DeleteUserReq deleteUserReq){
+        try {
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != deleteUserReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            userService.deleteUser(deleteUserReq);
+
+            //String result = "회원정보가 탈퇴되었습니다.";
+            return new BaseResponse<>(deleteUserReq.getUserIdx());
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 }

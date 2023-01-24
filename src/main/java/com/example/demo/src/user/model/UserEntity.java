@@ -50,4 +50,11 @@ public class UserEntity {
 
     //유저정보수정_아이디 (entity -> DTO)
     //public PatchUserIdRes toPatchUserIdRes(){ return new PatchUserIdRes(id);}
+
+    public void updateUserId(String newUserId){
+        this.userId = newUserId;
+    }
+    public void updatePassword(String newPassword){
+        this.password = newPassword;
+    }
 }

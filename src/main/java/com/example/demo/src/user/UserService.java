@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.record.model.RecordEntity;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -67,20 +68,49 @@ public class UserService {
     }
 
     //유저정보수정_아이디
-    public void modifyUserId(Long userIdx, PatchUserIdReq patchUserIdReq)throws BaseException{
+    public void modifyUserId(PatchUserIdReq patchUserIdReq)throws BaseException{
 
         try{
-            String userId = patchUserIdReq.getUserId();
+            String newUserId = patchUserIdReq.getNewUserId();
+            Long userIdx = patchUserIdReq.getUserIdx();
 
-            //UserEntity userEntity = userRepository.findById(userIdx).get();
+            UserEntity userEntity = userRepository.findById(userIdx).get();
 
-            System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
+            userEntity.updateUserId(newUserId);
+            //System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
 
-            userRepository.updateUserId(userId, userIdx);
+            //userRepository.updateUserId(newUserId, userIdx);
 
         } catch (Exception exception){
-            throw new BaseException(BaseResponseStatus.MODIFY_FAIL_USERNAME);
+            throw new BaseException(BaseResponseStatus.MODIFY_FAIL_USERID);
         }
-
     }
+    //유저정보수정_비밀번호
+    //TODO: 비밀번호-jwt로 바꿔서 저장하기, 유저정보수정 mapping 이름바꾸기
+    public void modifyPassword(PatchPasswordReq patchPasswordReq) throws BaseException{
+        try{
+            String newPassword = patchPasswordReq.getNewPassword();
+            Long userIdx = patchPasswordReq.getUserIdx();
+
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+
+            userEntity.updatePassword(newPassword);
+            //System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
+
+            //userRepository.updateUserId(newUserId, userIdx);
+
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.MODIFY_FAIL_PASSWORD);
+        }
+    }
+
+    public void deleteUser(DeleteUserReq deleteUserReq)throws BaseException{
+        try{
+            userRepository.deleteById(deleteUserReq.getUserIdx());
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }
