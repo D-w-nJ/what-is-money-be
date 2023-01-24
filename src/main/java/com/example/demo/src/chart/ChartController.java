@@ -39,4 +39,18 @@ public class ChartController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    @GetMapping("last")
+    public BaseResponse<List<GetChartRes>> getChartListByLast(@RequestBody GetChartReq getChartReq) {
+        try {
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != getChartReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            List<GetChartRes> getChartResList = chartService.getChartListByLast(getChartReq);
+            return new BaseResponse<>(getChartResList);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
