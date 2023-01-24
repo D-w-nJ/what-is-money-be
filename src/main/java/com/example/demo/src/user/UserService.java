@@ -85,14 +85,37 @@ public class UserService {
             throw new BaseException(BaseResponseStatus.MODIFY_FAIL_USERID);
         }
     }
+
     //유저정보수정_비밀번호
-    //TODO: 비밀번호-jwt로 바꿔서 저장하기, 유저정보수정 mapping 이름바꾸기
+    //TODO: 비밀번호-jwt로 바꿔서 저장하기
+//    String pwd;
+//        try {
+//        // 암호화: postUserReq에서 제공받은 비밀번호를 보안을 위해 암호화시켜 DB에 저장합니다.
+//        // ex) password123 -> dfhsjfkjdsnj4@!$!@chdsnjfwkenjfnsjfnjsd.fdsfaifsadjfjaf
+//        pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postUserReq.getPassword()); // 암호화코드
+//        postUserReq.setPassword(pwd);
+//    } catch (Exception ignored) { // 암호화가 실패하였을 경우 에러 발생
+//        throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+//    }
     public void modifyPassword(PatchPasswordReq patchPasswordReq) throws BaseException{
+        String newPassword;
         try{
-            String newPassword = patchPasswordReq.getNewPassword();
+
             Long userIdx = patchPasswordReq.getUserIdx();
 
             UserEntity userEntity = userRepository.findById(userIdx).get();
+
+
+            try{
+                // 암호화: patchPasswordReq에서 제공받은 비밀번호를 보안을 위해 암호화시켜 DB에 저장합니다.
+                newPassword = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(patchPasswordReq.getNewPassword());
+                //patchPasswordReq.setNewPassword(newPassword);
+
+
+            } catch (Exception ignored){
+                throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+            }
+
 
             userEntity.updatePassword(newPassword);
             //System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
