@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
@@ -52,16 +53,34 @@ public class UserService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
         try {
-            UserEntity user = userRepository.findByEmail(postLoginReq.getEmail());
+            UserEntity user = userRepository.findByUserId(postLoginReq.getUserId());
             user.setPassword(password);
             if (user.getPassword().equals(password)) { //비밀번호가 같다면
                 String jwt = jwtService.createJwt(user.getId());
-                return user.toPostLoginRes();
+                return user.toPostLoginRes(jwt);
             } else {
                 throw new BaseException(FAILED_TO_LOGIN);
             }
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_LOGIN);
         }
+    }
+
+    //유저정보수정_아이디
+    public void modifyUserId(Long userIdx, PatchUserIdReq patchUserIdReq)throws BaseException{
+
+        try{
+            String userId = patchUserIdReq.getUserId();
+
+            //UserEntity userEntity = userRepository.findById(userIdx).get();
+
+            System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
+
+            userRepository.updateUserId(userId, userIdx);
+
+        } catch (Exception exception){
+            throw new BaseException(BaseResponseStatus.MODIFY_FAIL_USERNAME);
+        }
+
     }
 }
