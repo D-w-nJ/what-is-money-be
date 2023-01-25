@@ -5,6 +5,10 @@ spring:
   application:
     name: demo
 
+  redis:
+    host: localhost #자신의 엔드포인트
+    port: 6379
+
   datasource:
     platform: mysql
     url: jdbc:mysql://db-mnmn.chvkp5qmhxhv.ap-northeast-2.rds.amazonaws.com:3306/what-is-money

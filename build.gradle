@@ -58,7 +58,16 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter')
     compile('org.springframework.boot:spring-boot-starter-web')
 
+    //JwtService 를 만들어서 JWT를 통해 토큰을 생성, 토큰 검증 하는 클래스를 만들 것이다
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
+    //NotEmpty 어노테이션 사용
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 
 }

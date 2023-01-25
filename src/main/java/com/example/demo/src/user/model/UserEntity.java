@@ -2,14 +2,18 @@ package com.example.demo.src.user.model;
 
 import com.example.demo.src.goal.model.GoalEntity;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity //JPA가 사용하는 객체라는 뜻이다. 이 어노테이션이 있어야 JPA가 인식할 수 있다.
 @Table(name = "user")
-@Getter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder @Data
 public class UserEntity {
 
@@ -30,6 +34,10 @@ public class UserEntity {
     private int status;
     private String image;
 
+    //refresh token db에 저장
+    @Column(name = "refresh_token")
+    private String RT;
+
     @OneToMany(mappedBy = "user_id")
     private List<GoalEntity> goalEntityList = new ArrayList<>();
 
@@ -44,8 +52,8 @@ public class UserEntity {
     }
 
     // 로그인 (entity -> DTO)
-    public PostLoginRes toPostLoginRes(String jwt) {
-        return new PostLoginRes(id, jwt);
+    public PostLoginRes toPostLoginRes(TokenDto tokenDto) {
+        return new PostLoginRes(id, tokenDto);
     }
 
 
@@ -60,5 +68,8 @@ public class UserEntity {
     }
     public void saveAlarm(boolean alarm){
         this.alarm = alarm;
+    }
+    public void updateRT(String RT){
+        this.RT = RT;
     }
 }
