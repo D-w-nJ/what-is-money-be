@@ -48,13 +48,17 @@ public class UserEntity {
         return new PostLoginRes(id, jwt);
     }
 
-    //유저정보수정_아이디 (entity -> DTO)
-    //public PatchUserIdRes toPatchUserIdRes(){ return new PatchUserIdRes(id);}
 
     public void updateUserId(String newUserId){
         this.userId = newUserId;
     }
     public void updatePassword(String newPassword){
         this.password = newPassword;
+    }
+    public void saveImage(String image){
+        this.image = image;
+    }
+    public void saveAlarm(boolean alarm){
+        this.alarm = alarm;
     }
 }

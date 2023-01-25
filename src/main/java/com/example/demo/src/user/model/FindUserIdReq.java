@@ -6,22 +6,6 @@ import lombok.*;
 @Setter // 해당 클래스에 대한 설정자 생성
 @AllArgsConstructor // 해당 클래스의 모든 멤버 변수(email, password, nickname, profileImage)를 받는 생성자를 생성
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // 해당 클래스의 파라미터가 없는 생성자를 생성, 접근제한자를 PROTECTED로 설정.
-public class PostUserReq {
-    private String userId;
-    private String password;
-    private String confirmPassword;
-    private String name;
+public class FindUserIdReq {
     private String email;
-    private boolean agree;
-    private boolean idCheck;
-
-    public UserEntity toEntity() {
-        return UserEntity.builder()
-                .userId(userId)
-                .password(password)
-                .name(name)
-                .email(email)
-                .agree(agree)
-                .build();
-    }
 }

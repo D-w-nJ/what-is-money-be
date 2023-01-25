@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.question.model.PostQuestionReq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -8,9 +9,8 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -68,11 +68,54 @@ public class UserController {
         if (!isRegexEmail(postUserReq.getEmail())) {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
+
+        //아이디 중복체크 안하고 회원가입완료버튼 누르면 중복확인 해주세요!! 문구 뜨게하기
+        if(postUserReq.isIdCheck() == false){
+            return new BaseResponse<>(CHECK_USER_ID);
+        }
+
+        String pw2 = postUserReq.getConfirmPassword();
+
+        //비밀번호중복확인(비밀번호 2번입력 확인차)
+        if(!postUserReq.getPassword().equals(pw2)){
+            return new BaseResponse<>(INVALID_USER_PASSWORD);
+        }
+
+        //아이디, 이름 notEmpty
+        if(postUserReq.getUserId()==""){
+            return new BaseResponse<>(USERS_EMPTY_USER_ID);
+        }
+        if(postUserReq.getName() == ""){
+            return new BaseResponse<>(USERS_EMPTY_USER_NAME);
+        }
+
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+    /**
+     * 아이디중복확인 API
+     * [GET] /users/idCheck
+     * */
+    @GetMapping("/idCheck/{userId}")
+    public BaseResponse<String> CheckId(@PathVariable("userId") String userId){
+        String result;
+        try{
+            boolean duplicate = userService.CheckId(userId);
+            System.out.println("------------실행?------------duplicate?? "+duplicate);
+            if(duplicate == true){
+                result = "이미 사용중인 아이디입니다.";
+            }else{
+                result = "사용가능한 아이디입니다!";
+            }
+            return new BaseResponse<>(result);
+        }catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 
@@ -81,17 +124,39 @@ public class UserController {
      * [POST] /users/logIn
      */
     @ResponseBody
-    @PostMapping("/log-in")
+    @PostMapping("/login")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
         try {
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
             // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
+            if(postLoginReq.getUserId()==""){
+                return new BaseResponse<>(USERS_EMPTY_USER_ID);
+            }
+            if(postLoginReq.getPassword()==""){
+                return new BaseResponse<>(INVALID_USER_PASSWORD);
+            }
             PostLoginRes postLoginRes = userService.login(postLoginReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * 로그아웃 API
+     * [POST] /users/logout
+     * */
+//    @ResponseBody
+//    @PostMapping("/logout")
+//    public BaseResponse<PostLogoutRes> logout(@RequestBody PostLogoutReq postLogoutReq) {
+//        try{
+//            PostLogoutRes postLogoutRes = userService.logout(postLogoutReq);
+//            return new BaseResponse<>(postLogoutRes);
+//        } catch(BaseException exception){
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//
+//    }
 
     /**
      * 유저정보변경 API
@@ -105,6 +170,11 @@ public class UserController {
             if (patchUserIdReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
+            //아이디중복확인
+            if(patchUserIdReq.isIdCheck()==false){
+                return new BaseResponse<>(CHECK_USER_ID);
+            }
+
             //같다면 유저네임 변경
             userService.modifyUserId(patchUserIdReq);
 
@@ -114,6 +184,7 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
     @ResponseBody
     @PatchMapping("/modifyPassword")
     public BaseResponse<String> modifyPassword(@RequestBody PatchPasswordReq patchPasswordReq) {
@@ -121,6 +192,10 @@ public class UserController {
             int userIdxByJwt = jwtService.getUserIdx();
             if (patchPasswordReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            //비밀번호중복확인
+            if(!patchPasswordReq.getNewPassword().equals(patchPasswordReq.getConfirmNewPassword())){
+                return new BaseResponse<>(INVALID_USER_PASSWORD);
             }
             //같다면 유저비밀번호 변경
             userService.modifyPassword(patchPasswordReq);
@@ -135,10 +210,10 @@ public class UserController {
     /**
      * 회원탈퇴 API
      * [DELETE] /users/deleteUser
-     * */
+     */
     @ResponseBody
     @DeleteMapping("/deleteUser")
-    public BaseResponse<String> deleteUser(@RequestBody DeleteUserReq deleteUserReq){
+    public BaseResponse<String> deleteUser(@RequestBody DeleteUserReq deleteUserReq) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != deleteUserReq.getUserIdx()) {
@@ -152,4 +227,134 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
+
+    /**
+     * 회원정보설정_이미지 API
+     * [POST] /users/profile
+     */
+    @ResponseBody
+    @PostMapping("/profile")
+    public BaseResponse<String> postUserImage(@RequestBody PostUserImageReq postUserImageReq) {
+        try {
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != postUserImageReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            userService.postUserImage(postUserImageReq);
+
+            String result = "프로필 사진이 정상적으로 업로드되었습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 회원정보설정_알림
+     * [POST] /users/alarm
+     * */
+    @ResponseBody
+    @PostMapping("/alarm")
+    public BaseResponse<String> postUserAlarm(@RequestBody PostUserAlarmReq postUserAlarmReq){
+        String result;
+        try{
+            userService.postUserAlarm(postUserAlarmReq);
+
+            if(postUserAlarmReq.isAlarm()==true){
+                result = "알림을 켭니다.";
+            }else{
+                result = "알림을 끕니다.";
+            }
+
+            return new BaseResponse<>(result);
+
+        } catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 아이디찾기 API
+     * [POST] /users/findUserId
+     * */
+    @ResponseBody
+    @PostMapping("/findUserId")
+    public BaseResponse<String> findUserId(@RequestBody FindUserIdReq findUserIdReq){
+        if (findUserIdReq.getEmail() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
+        if (!isRegexEmail(findUserIdReq.getEmail())) {
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
+        try {
+            String userId = userService.findUserId(findUserIdReq);
+            return new BaseResponse<>(userId);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**비밀번호찾기 API
+     * [POST] /users/findPassword
+     * */
+    @ResponseBody
+    @PostMapping("/findPassword")
+    public BaseResponse<String> findPassword(@RequestBody FindPasswordReq findPasswordReq){
+        if(findPasswordReq.getUserId() == null){
+            return new BaseResponse<>(USERS_EMPTY_USER_ID);
+        }
+        if (findPasswordReq.getEmail() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
+        if (!isRegexEmail(findPasswordReq.getEmail())) {
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
+        String result = "이메일로 비밀번호를 재설정할 수 있는 메일이 발송되었습니다.";
+        return new BaseResponse<>(result);
+    }
+
+    /**
+     * 비밀번호 재설정 API
+     * [PATCH] /users/resetPassword
+     * */
+    @ResponseBody
+    @PatchMapping("/resetPassword")
+    public BaseResponse<String> resetPassword(@RequestBody ResetPassword resetPassword){
+        try {
+            //유저비밀번호 변경
+            userService.resetPassword(resetPassword);
+
+            String result = "비밀번호를 재설정하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 문의사항 API
+     * [POST] /users/question
+     */
+//    @ResponseBody
+//    @PostMapping("/question")
+//    public BaseResponse<String> createQuestion(@RequestBody PostQuestionReq postQuestionReq) {
+//        if (postQuestionReq.getEmail() == null) {
+//            return new BaseResponse(POST_USERS_EMPTY_EMAIL);
+//        }
+//        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
+//        if (!isRegexEmail(postQuestionReq.getEmail())) {
+//            return new BaseResponse(POST_USERS_INVALID_EMAIL);
+//        }
+//        try {
+//            //PostUserRes postUserRes = userService.createUser(postUserReq);
+//            userService.createQuestion(postQuestionReq);
+//
+//            String result = "문의사항이 정상적으로 접수되었습니다.";
+//            return new BaseResponse<>(result);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>(exception.getStatus());
+//        }
+//    }
 }

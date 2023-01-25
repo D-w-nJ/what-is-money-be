@@ -14,6 +14,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     UserEntity findUserEntityById(Long id);
 
+    //아이디중복확인
+    //@Query(value = "select userId from UserEntity where userId = :userId")
+    //String findBy
+
+
     //유저정보수정_아이디
 //    @Query("update UserEntity m set m.userId = :newUserId where m.id = :userIdx")
 //    void updateUserId(@Param("newUserId") String newUserId, @Param("userIdx") Long userIdx);

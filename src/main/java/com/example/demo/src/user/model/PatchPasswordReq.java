@@ -10,4 +10,5 @@ import lombok.Setter;
 public class PatchPasswordReq {
     Long userIdx;
     private String  newPassword;
+    private String confirmNewPassword;
 }
