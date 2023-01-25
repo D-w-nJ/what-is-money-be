@@ -22,8 +22,15 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
+    INVALID_RT(false, 2004, "Refresh Token 정보가 일치하지 않습니다."),
+    EMPTY_RT(false, 2005, "로그아웃된 사용자입니다."),
+
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
+    INVALID_USER_PASSWORD(false, 2011, "비밀번호를 다시 입력하세요."),
+    USERS_EMPTY_USER_NAME(false, 2012, "이름을 입력해주세요"),
+    USERS_EXISTS_USER_ID(false, 2013, "이미 사용중인 아이디입니다."),
+    CHECK_USER_ID(false, 2014, "아이디 중복확인을 해주세요."),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
@@ -54,7 +61,8 @@ public enum BaseResponseStatus {
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
 
     //[PATCH] /users/{userIdx}
-    MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
+    MODIFY_FAIL_USERID(false,4014,"유저아이디 수정 실패"),
+    MODIFY_FAIL_PASSWORD(false, 4015, "유저비밀번호 수정 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");

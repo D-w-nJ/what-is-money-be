@@ -1,6 +1,9 @@
 package com.example.demo.src.user.model;
 
 import lombok.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+import javax.validation.constraints.NotEmpty;
 
 @Getter // 해당 클래스에 대한 접근자 생성
 @Setter // 해당 클래스에 대한 설정자 생성
@@ -12,6 +15,9 @@ import lombok.*;
  * Email, Password 정보를 전달하기 위해 Body값까지 전달하는 Post 요청을 사용한다.
  */
 public class PostLoginReq {
-    private String email;
+    @NotEmpty(message = "아이디는 필수 입력값입니다.")
+    private String userId;
+    @NotEmpty(message = "비밀번호는 필수 입력값입니다.")
     private String password;
+
 }

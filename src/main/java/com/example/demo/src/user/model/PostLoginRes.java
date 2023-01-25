@@ -12,7 +12,8 @@ import lombok.Setter;
  * 로그인의 결과(Respone)를 보여주는 데이터의 형태
  */
 public class PostLoginRes {
-    private String id_str;
+    private Long userIdx;
     //    해당 부분은 7주차 - JWT 수업 후 주석해제 및 대체해주세요!
-    //private String jwt;
+    private TokenDto tokenDto;
+
 }
