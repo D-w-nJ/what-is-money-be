@@ -35,6 +35,8 @@ public class RecordService {
 
     final int SHOWN_SIZE = 3;
     final int LAST_INDEX_OF_DATE_FORMAT = 10;
+    final int LAST_INDEX_OF_DATETIME = 19;
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public PostRecordRes createRecord(PostRecordReq postRecordReq) throws BaseException {
         try {
@@ -59,8 +61,7 @@ public class RecordService {
 
     public void updateRecord(PatchRecordReq patchRecordReq) throws BaseException {
         try {
-            String date = patchRecordReq.getDate().substring(0, patchRecordReq.getDate().lastIndexOf(" "));
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String date = patchRecordReq.getDate().substring(0, LAST_INDEX_OF_DATETIME);
             RecordEntity record = recordRepository.findById(patchRecordReq.getRecordIdx()).orElse(null);
             record.update(patchRecordReq.getAmount(),
                     categoryRepository.findById(patchRecordReq.getCategoryIdx()).orElse(null),
@@ -74,7 +75,6 @@ public class RecordService {
     public GetRecordRes getDailyRecords(GetRecordReq getRecordReq, boolean part) throws BaseException {
         try {
             String date = getRecordReq.getDate().substring(0, LAST_INDEX_OF_DATE_FORMAT);
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime dayStart = LocalDateTime.parse(date + " 00:00:00", format);
             LocalDateTime dayEnd = LocalDateTime.parse(date + " 23:59:59", format);
 

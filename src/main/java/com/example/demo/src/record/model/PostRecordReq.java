@@ -23,7 +23,7 @@ public class PostRecordReq {
     private int amount;
 
     public RecordEntity toEntity(UserEntity user, GoalEntity goal, CategoryEntity category) {
-        String strDate = date.substring(0,date.lastIndexOf(" "));
+        String strDate = date.substring(0,19);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime reDate = LocalDateTime.parse(strDate,format);
         return RecordEntity.builder()
