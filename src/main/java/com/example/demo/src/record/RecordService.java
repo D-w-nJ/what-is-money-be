@@ -65,8 +65,7 @@ public class RecordService {
             RecordEntity record = recordRepository.findById(patchRecordReq.getRecordIdx()).orElse(null);
             record.update(patchRecordReq.getAmount(),
                     categoryRepository.findById(patchRecordReq.getCategoryIdx()).orElse(null),
-                    LocalDateTime.parse(date, format),
-                    patchRecordReq.isType());
+                    LocalDateTime.parse(date, format));
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -87,7 +86,7 @@ public class RecordService {
             );
 
             List<RecordByDate> collect = records.stream()
-                    .map(m -> new RecordByDate(m.getId(), m.isFlag(), m.getCategory().getCategory_name(), m.getAmount()))
+                    .map(m -> new RecordByDate(m.getId(),m.getCategory().getFlag(), m.getCategory().getCategory_name(), m.getAmount()))
                     .collect(Collectors.toList());
 
             if (!part) {

@@ -9,7 +9,6 @@ public class PatchRecordReq {
     private Long userIdx;
     private Long recordIdx;
     private String date;
-    private boolean type;
     private Long categoryIdx;
     private int amount;
 }

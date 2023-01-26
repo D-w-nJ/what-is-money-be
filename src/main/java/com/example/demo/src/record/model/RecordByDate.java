@@ -9,7 +9,7 @@ import lombok.*;
 public  // 해당 클래스의 파라미터가 없는 생성자를 생성, 접근제한자를 PROTECTED로 설정.
 class RecordByDate {
     private Long recordIdx;
-    private Boolean type;
+    private int type;
     private String category;
     private int amount;
 }

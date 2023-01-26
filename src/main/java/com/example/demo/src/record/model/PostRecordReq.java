@@ -5,7 +5,6 @@ import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.user.model.UserEntity;
 import lombok.*;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,7 +17,6 @@ public class PostRecordReq {
     private Long userIdx;
     private Long goalIdx;
     private String date;
-    private boolean type;
     private Long category;
     private int amount;
 
@@ -28,7 +26,6 @@ public class PostRecordReq {
         LocalDateTime reDate = LocalDateTime.parse(strDate,format);
         return RecordEntity.builder()
                 .amount(amount)
-                .flag(type)
                 .date(reDate)
                 .user(user)
                 .goal(goal)

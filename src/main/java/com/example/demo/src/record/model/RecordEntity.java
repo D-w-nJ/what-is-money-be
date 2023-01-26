@@ -18,11 +18,11 @@ import java.time.format.DateTimeFormatter;
 @Data
 public class RecordEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int amount;
-    private boolean flag; //0:저축, 1: 지출
     private LocalDateTime date;
 
     @ManyToOne
@@ -41,10 +41,9 @@ public class RecordEntity {
                 id);
     }
 
-    public void update(int amount, CategoryEntity category, LocalDateTime date, boolean type) {
+    public void update(int amount, CategoryEntity category, LocalDateTime date) {
         this.amount = amount;
         this.category = category;
         this.date = date;
-        this.flag = type;
     }
 }
