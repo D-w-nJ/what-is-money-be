@@ -31,6 +31,7 @@ public enum BaseResponseStatus {
     USERS_EMPTY_USER_NAME(false, 2012, "이름을 입력해주세요"),
     USERS_EXISTS_USER_ID(false, 2013, "이미 사용중인 아이디입니다."),
     CHECK_USER_ID(false, 2014, "아이디 중복확인을 해주세요."),
+    FAIL_START_PAGE(false, 2015, "메인페이지 시작 실패"),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),

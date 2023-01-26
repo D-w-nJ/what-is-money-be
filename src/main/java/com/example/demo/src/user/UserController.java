@@ -129,6 +129,22 @@ public class UserController {
     }
 
     /**
+     * 시작페이지 API
+     * [GET] /users/start
+     * */
+    @ResponseBody
+    @GetMapping("/start/{userIdx}")
+    public BaseResponse<String> startPage(@PathVariable("userIdx") Long userIdx){
+        try{
+            String name = userService.startPage(userIdx);
+            String result = name+"님, 어서오세요!";
+            return new BaseResponse<>(result);
+        }catch(BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
      * 로그인 API
      * [POST] /users/logIn
      */

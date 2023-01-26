@@ -68,6 +68,16 @@ public class UserService {
         }
     }
 
+    //시작페이지
+    public String startPage(Long userIdx)throws BaseException{
+        try{
+            UserEntity user = userRepository.findById(userIdx).get();
+            return user.getName();
+        }catch (Exception e) {
+            throw new BaseException(FAIL_START_PAGE);
+        }
+    }
+
 
     //로그인(password 검사)
     public PostLoginRes login(PostLoginReq postLoginReq)throws BaseException {
