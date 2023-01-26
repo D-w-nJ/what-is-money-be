@@ -78,11 +78,12 @@ public class RecordService {
             LocalDateTime dayStart = LocalDateTime.parse(date + " 00:00:00", format);
             LocalDateTime dayEnd = LocalDateTime.parse(date + " 23:59:59", format);
 
+            Sort.Direction order = (part) ? Sort.Direction.DESC : Sort.Direction.ASC;
             List<RecordEntity> records = recordRepository.findAllByDateBetweenAndUserAndGoal(
                     dayStart, dayEnd,
                     userRepository.findById(getRecordReq.getUserIdx()).orElse(null),
                     goalRepository.findById(getRecordReq.getGoalIdx()).orElse(null),
-                    Sort.by(Sort.Direction.ASC, "date")
+                    Sort.by(order, "date")
             );
 
             List<RecordByDate> collect = records.stream()
