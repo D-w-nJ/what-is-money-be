@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseResponseStatus;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -8,8 +9,11 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
+import javax.validation.Valid;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
@@ -55,7 +59,7 @@ public class UserController {
     // Body
     @ResponseBody
     @PostMapping("/signup")    // POST 방식의 요청을 매핑하기 위한 어노테이션
-    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+    public BaseResponse<PostUserRes> createUser(@Valid @RequestBody PostUserReq postUserReq) {
         //  @RequestBody란, 클라이언트가 전송하는 HTTP Request Body(우리는 JSON으로 통신하니, 이 경우 body는 JSON)를 자바 객체로 매핑시켜주는 어노테이션
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
 //         email에 값이 존재하는지, 빈 값으로 요청하지는 않았는지 검사합니다. 빈값으로 요청했다면 에러 메시지를 보냅니다.
@@ -130,7 +134,7 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
+    public BaseResponse<PostLoginRes> logIn(@Valid @RequestBody PostLoginReq postLoginReq) {
         try {
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
             // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
@@ -154,7 +158,7 @@ public class UserController {
      * */
     @ResponseBody
     @PostMapping("/reissue")
-    public BaseResponse<String> reissue(@RequestBody Reissue reissue) {
+    public BaseResponse<String> reissue(@Valid @RequestBody Reissue reissue) {
         try{
             TokenDto tokenDto = userService.reissue(reissue);
 
@@ -171,7 +175,7 @@ public class UserController {
      * */
     @ResponseBody
     @PostMapping("/logout")
-    public BaseResponse<String> logout(@RequestBody PostLogoutReq postLogoutReq) {
+    public BaseResponse<String> logout(@Valid @RequestBody PostLogoutReq postLogoutReq) {
         try{
             userService.logout(postLogoutReq);
 
@@ -189,7 +193,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/modifyUserId")
-    public BaseResponse<String> modifyUserId(@RequestBody PatchUserIdReq patchUserIdReq) {
+    public BaseResponse<String> modifyUserId(@Valid @RequestBody PatchUserIdReq patchUserIdReq) {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             if (patchUserIdReq.getUserIdx() != userIdxByJwt) {
@@ -220,7 +224,7 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/modifyPassword")
-    public BaseResponse<String> modifyPassword(@RequestBody PatchPasswordReq patchPasswordReq) {
+    public BaseResponse<String> modifyPassword(@Valid @RequestBody PatchPasswordReq patchPasswordReq) {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             if (patchPasswordReq.getUserIdx() != userIdxByJwt) {
@@ -330,7 +334,7 @@ public class UserController {
      * */
     @ResponseBody
     @PostMapping("/findUserId")
-    public BaseResponse<String> findUserId(@RequestBody FindUserIdReq findUserIdReq){
+    public BaseResponse<String> findUserId(@Valid @RequestBody FindUserIdReq findUserIdReq){
         if (findUserIdReq.getEmail() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
         }
@@ -351,7 +355,7 @@ public class UserController {
      * */
     @ResponseBody
     @PostMapping("/findPassword")
-    public BaseResponse<String> findPassword(@RequestBody FindPasswordReq findPasswordReq){
+    public BaseResponse<String> findPassword(@Valid @RequestBody FindPasswordReq findPasswordReq){
         if(findPasswordReq.getUserId() == null){
             return new BaseResponse<>(USERS_EMPTY_USER_ID);
         }
@@ -372,7 +376,7 @@ public class UserController {
      * */
     @ResponseBody
     @PatchMapping("/resetPassword")
-    public BaseResponse<String> resetPassword(@RequestBody ResetPasswordReq resetPasswordReq){
+    public BaseResponse<String> resetPassword(@Valid @RequestBody ResetPasswordReq resetPasswordReq){
         try {
             //아이디, 비번 not Empty
             if(resetPasswordReq.getUserId()==null || resetPasswordReq.getUserId()==""){
