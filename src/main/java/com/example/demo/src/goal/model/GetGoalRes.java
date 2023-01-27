@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GetGoalRes {
@@ -16,16 +18,20 @@ public class GetGoalRes {
     private int goal_amount;
     private int amount;
     private float progress;
+    private String category_name;
+    private LocalDateTime date;
     // private UserEntity userEntity;
 
     // private Long userIdx;
 
-    public GetGoalRes(Long id, String image, int goal_amount, int amount, float progress){
+    public GetGoalRes(Long id, String image, int goal_amount, int amount, float progress, String category_name, LocalDateTime date){
         this.id = id;
         this.image = image;
         this.goal_amount = goal_amount;
         this.amount = amount;
         this.progress = progress;
+        this.category_name = category_name;
+        this.date = date;
         // this.userIdx = userIdx;
     }
 }
