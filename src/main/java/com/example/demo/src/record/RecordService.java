@@ -137,7 +137,12 @@ public class RecordService {
     public GetRecord getRecordOne(Long recordIdx) throws BaseException {
         try {
             RecordEntity record = recordRepository.findById(recordIdx).orElse(null);
-            GetRecord getRecord = new GetRecord(record.getCategory().getFlag(), record.getCategory().getCategory_name(), record.getAmount());
+            GetRecord getRecord = new GetRecord(
+                    record.getGoal().getId(),
+                    record.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    record.getCategory().getFlag(),
+                    record.getCategory().getCategory_name(),
+                    record.getAmount());
             return getRecord;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
