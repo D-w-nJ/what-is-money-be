@@ -86,7 +86,7 @@ public class RecordService {
             );
 
             List<RecordByDate> collect = records.stream()
-                    .map(m -> new RecordByDate(m.getId(),m.getCategory().getFlag(), m.getCategory().getCategory_name(), m.getAmount()))
+                    .map(m -> new RecordByDate(m.getId(), m.getCategory().getFlag(), m.getCategory().getCategory_name(), m.getAmount()))
                     .collect(Collectors.toList());
 
             if (!part) {
@@ -129,6 +129,16 @@ public class RecordService {
             else
                 reDates.sort(Comparator.comparing(String::toString).reversed());
             return reDates;
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetRecord getRecordOne(Long recordIdx) throws BaseException {
+        try {
+            RecordEntity record = recordRepository.findById(recordIdx).orElse(null);
+            GetRecord getRecord = new GetRecord(record.getCategory().getFlag(), record.getCategory().getCategory_name(), record.getAmount());
+            return getRecord;
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

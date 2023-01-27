@@ -118,4 +118,23 @@ public class RecordController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 기록 1개 조회 API
+     * [GET] /records/
+     */
+    @GetMapping("/records/isol/{userIdx}/{recordIdx}")
+    public BaseResponse<GetRecord> getRecordOne(@PathVariable("userIdx") Long userIdx,
+                                                @PathVariable("recordIdx") Long recordIdx) {
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            GetRecord getRecord = recordService.getRecordOne(recordIdx);
+            return new BaseResponse<>(getRecord);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
