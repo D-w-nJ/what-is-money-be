@@ -83,6 +83,7 @@ public class UserService {
     public PostLoginRes login(PostLoginReq postLoginReq)throws BaseException {
         String password;
         try {
+            System.out.println("-----------암호화 전 password-------"+postLoginReq.getPassword());
             password = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(postLoginReq.getPassword()); //암호화
             // 회원가입 할 때 비밀번호가 암호화되어 저장되었기 때문에 로그인 할 때도 암호화된 값끼리 비교를 해야함
         } catch (Exception e) {
@@ -90,7 +91,11 @@ public class UserService {
         }
         try {
             UserEntity user = userRepository.findByUserId(postLoginReq.getUserId());
-            user.setPassword(password);
+            System.out.println("-------user------"+user);
+            //로그인할 때 입력받은 비밀번호를 암호화해서 저장??
+            //user.setPassword(password);
+            System.out.println("--------암호화 후 password--------"+password);
+            System.out.println("-----------user.getPassword()???-------"+user.getPassword());
             if (user.getPassword().equals(password)) { //비밀번호가 같다면
                 //인증 정보를 기반으로 JWT 토큰 생성
                 TokenDto tokenDto = jwtService.createJwt(user.getId());
@@ -101,7 +106,6 @@ public class UserService {
 //                        .set("RT:" + user.getId(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
                 user.updateRT(RT);
-                System.out.println("--------실행?????------------");
                 return user.toPostLoginRes(tokenDto);
             }else {
                 throw new BaseException(FAILED_TO_LOGIN);
