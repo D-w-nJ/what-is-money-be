@@ -7,6 +7,7 @@ import lombok.*;
 import org.apache.catalina.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "goal")
@@ -20,6 +21,7 @@ public class GoalEntity {
     private int goal_amount; // 목표 금액
     private int amount; // 현재 금액
     private float progress; // 진행률 퍼센트
+    private LocalDateTime date; // 생설 날짜
 
     // name : 맵핑할 외래키의 이름
     // referencedColumnName : 외래키가 참조하는 대상 태이블의 실제 pk 이름

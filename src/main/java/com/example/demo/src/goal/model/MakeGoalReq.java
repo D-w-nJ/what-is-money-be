@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 @Data
@@ -18,6 +20,8 @@ public class MakeGoalReq {
     private int init_amount; // 초기 금액
 
     private String category_name; // 카테고리명
+
+    private String date; // 생성날짜
 
     // 요청으로 받은 Goal 객체를 entity화하여 저장하는 용도
     public GoalEntity toEntity(CategoryEntity categoryEntity){
@@ -31,12 +35,18 @@ public class MakeGoalReq {
     }
 
     public GoalEntity toEntity(String image, int goalAmount, int initAmount, String category_name, UserEntity userEntity) {
+        String strDate = date.substring(0,19);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime reDate = LocalDateTime.parse(strDate,format);
+        System.out.println("========================================================");
+        System.out.println(reDate);
         return GoalEntity.builder()
                 .image(image)
                 .goal_amount(goalAmount)
                 .init_amount(initAmount)
                 .category_name(category_name)
                 .user_id(userEntity)
+                .date(reDate)
                 .build();
     }
 }
