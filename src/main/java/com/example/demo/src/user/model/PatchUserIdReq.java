@@ -13,6 +13,5 @@ public class PatchUserIdReq {
     private Long userIdx;
     @NotEmpty(message = "아이디를 입력해주세요")
     private String newUserId;
-    @NotEmpty(message = "아이디중복확인을 해주세요")
     private boolean idCheck;
 }

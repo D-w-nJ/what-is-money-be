@@ -178,8 +178,8 @@ public class UserController {
         try{
             TokenDto tokenDto = userService.reissue(reissue);
 
-            String newRT = "New RefreshToken: "+tokenDto.getRefreshToken();
-            return new BaseResponse<>(newRT);
+            String newAccessToken = "New AccessToken: "+tokenDto.getAccessToken();
+            return new BaseResponse<>(newAccessToken);
         }catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -210,28 +210,34 @@ public class UserController {
     @ResponseBody
     @PatchMapping("/modifyUserId")
     public BaseResponse<String> modifyUserId(@Valid @RequestBody PatchUserIdReq patchUserIdReq) {
+        String result;
         try {
+            System.out.println("--------------------------------");
             int userIdxByJwt = jwtService.getUserIdx();
+            //Long으로 타입 변환
+            //Long userIdxByJwt = Long.valueOf(userIdxByJwt1);
             if (patchUserIdReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            //아이디, userIdx notEmpty
-            if(patchUserIdReq.getUserIdx()==null){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-            if(patchUserIdReq.getNewUserId()==null || patchUserIdReq.getNewUserId()==""){
-                return new BaseResponse<>(USERS_EMPTY_USER_ID);
-            }
+//            //아이디, userIdx notEmpty
+//            if(patchUserIdReq.getUserIdx()==null){
+//                return new BaseResponse<>(REQUEST_ERROR);
+//            }
+//            if(patchUserIdReq.getNewUserId()==null || patchUserIdReq.getNewUserId()==""){
+//                return new BaseResponse<>(USERS_EMPTY_USER_ID);
+//            }
 
             //아이디중복확인
             if(patchUserIdReq.isIdCheck()==false){
                 return new BaseResponse<>(CHECK_USER_ID);
+            }else{
+                //같다면 유저네임 변경
+                userService.modifyUserId(patchUserIdReq);
+
+                result = "회원정보가 수정되었습니다.";
             }
 
-            //같다면 유저네임 변경
-            userService.modifyUserId(patchUserIdReq);
 
-            String result = "회원정보가 수정되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -359,8 +365,11 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
         try {
-            String userId = userService.findUserId(findUserIdReq);
-            return new BaseResponse<>(userId);
+            userService.findUserId(findUserIdReq);
+            System.out.println("-----------실행??------------");
+
+            String result = "메일이 성공적으로 발송되었습니다!";
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -382,8 +391,14 @@ public class UserController {
         if (!isRegexEmail(findPasswordReq.getEmail())) {
             return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
         }
-        String result = "이메일로 비밀번호를 재설정할 수 있는 메일이 발송되었습니다.";
-        return new BaseResponse<>(result);
+        try{
+            userService.findPassword(findPasswordReq);
+            String result = "이메일로 비밀번호를 재설정할 수 있는 메일이 발송되었습니다.";
+            return new BaseResponse<>(result);
+
+        }catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
     /**

@@ -1,3 +1,5 @@
+#google계정 정보(메일발송)이 들어있으므로 application.yml은 gitignore해줘야함!
+
 server:
   port: 9000  # 9000번 포트로 실행
 
@@ -22,6 +24,18 @@ spring:
       naming:
         # naming strategy를 hibernate꺼로 바꿔줘야 테이블명을 설정한 그대로 쓸 수 있다.
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: {YOUR_GMAIL_ADDRESS}
+    password: {YOUR_GMAIL_PASSWORD}
+    properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
 
 # JPA log
 logging.level:

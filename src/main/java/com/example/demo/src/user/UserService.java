@@ -7,6 +7,8 @@ import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisTemplate redisTemplate;
+
+    //메일전송
+    private JavaMailSender javaMailSender;
 
     //회원가입
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
@@ -151,8 +156,8 @@ public class UserService {
 
         // 5. 새로운 토큰 생성
         TokenDto tokenDto = jwtService.createJwt(id2);
-        String newRT = tokenDto.getRefreshToken();
-        System.out.println("---------새로운토큰 생성??-------newRT?? "+newRT);
+        String newAccessToken = tokenDto.getRefreshToken();
+        System.out.println("---------새로운토큰 생성??-------newAccessToken?? "+newAccessToken);
 
         //6. RefreshToken Redis 업데이트
 //        redisTemplate.opsForValue()
@@ -203,15 +208,18 @@ public class UserService {
     public void modifyUserId(PatchUserIdReq patchUserIdReq)throws BaseException{
 
         try{
+            System.out.println("------------userService는 됨---------");
             String newUserId = patchUserIdReq.getNewUserId();
             Long userIdx = patchUserIdReq.getUserIdx();
 
             UserEntity userEntity = userRepository.findById(userIdx).get();
+            System.out.println("-----------userEntity----------"+userEntity);
 
             userEntity.updateUserId(newUserId);
-            //System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
+            System.out.println("---------newUserId--------"+newUserId);
+//            System.out.println("userService이다. userRepository가기 전. 여기까진 되었나?!");
 
-            //userRepository.updateUserId(newUserId, userIdx);
+//            userRepository.updateUserId(newUserId, userIdx);
 
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.MODIFY_FAIL_USERID);
@@ -273,20 +281,51 @@ public class UserService {
         }
     }
     //아이디찾기
-    public String findUserId(FindUserIdReq findUserIdReq)throws BaseException{
+    public void findUserId(FindUserIdReq findUserIdReq)throws BaseException{
         try{
-            //해당 이메일을 가진 userEntity찾기
-            UserEntity userEntity = userRepository.findByEmail(findUserIdReq.getEmail());
-            //userEntity에서 userId 추출 후 FindUserIdRes로 반환
-            String userId = userEntity.getUserId();
 
-            return userId;
+            System.out.println("-------------서비스로 넘어왔느냐?------------");
+            //TODO: 해당 이메일로 아이디 보내기
+            //해당 이메일을 가진 userEntity찾기
+            try{
+                UserEntity userEntity = userRepository.findByEmail(findUserIdReq.getEmail());
+                //userEntity에서 name과 userId 추출 후 해당이메일로 보내기
+                String name = userEntity.getName();
+                String userId = userEntity.getUserId();
+
+                System.out.println("---------name & userId--------"+name+"     "+userId);
+
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(findUserIdReq.getEmail());
+                message.setSubject("[머니뭐니] "+ name +"님의 아이디를 보내드립니다.");
+                message.setText(name+"님의 아이디: "+userId);
+
+                System.out.println("-------메일 발송이 되었느냐??--------");
+            }catch (Exception e){
+                throw new BaseException(INVALID_EMAIL);
+            }
+
 
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
+    //비밀번호 찾기
+    public void findPassword(FindPasswordReq findPasswordReq)throws BaseException{
+        try{
+            //해당 아이디를 가진 userEntity찾기
+            UserEntity userEntity = userRepository.findByUserId(findPasswordReq.getUserId());
+            //해당 아이디가 존재하면 해당 이메일로 메일보내기
+//            SimpleMailMessage message = new SimpleMailMessage();
+//            message.setTo(findPasswordReq.getEmail());
+//            message.setSubject("[머니뭐니] 비밀번호를 재설정해주세요");
+//            message.setText("비밀번호 재설정");
+//            javaMailSender.send(message);
+        }catch (Exception exception){
+            throw new BaseException(INVALID_USER_ID);
+        }
+    }
 
 
     //비밀번호재설정
