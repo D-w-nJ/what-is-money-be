@@ -43,8 +43,8 @@ spring:
 #    host: smtp.naver.com
 #    port: 465
 #    #본인 naver 계정정보 삽입
-#    username: jessicadbstjdi@naver.com
-#    password: dbstj0914!
+#    username:
+#    password:
 #    #전송하기 위한 prop으로 ssl의 신뢰, 권한 등 사용허가
 #    properties:
 #      mail.smtp.auth: true
