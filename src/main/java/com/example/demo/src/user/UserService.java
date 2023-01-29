@@ -7,6 +7,8 @@ import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,6 +30,7 @@ public class UserService {
     private final RedisTemplate redisTemplate;
 
     //메일전송
+    @Autowired
     private JavaMailSender javaMailSender;
 
     //회원가입
@@ -96,12 +99,8 @@ public class UserService {
         }
         try {
             UserEntity user = userRepository.findByUserId(postLoginReq.getUserId());
-            System.out.println("-------user------"+user);
-            //로그인할 때 입력받은 비밀번호를 암호화해서 저장??
-            //user.setPassword(password);
-            System.out.println("--------암호화 후 password--------"+password);
-            System.out.println("-----------user.getPassword()???-------"+user.getPassword());
-            if (user.getPassword().equals(password)) { //비밀번호가 같다면
+            //임시회원일 때는 status==1
+            if (user.getStatus()==1||user.getPassword().equals(password)) { //임시회원이거나 비밀번호가 같다면
                 //인증 정보를 기반으로 JWT 토큰 생성
                 TokenDto tokenDto = jwtService.createJwt(user.getId());
                 String RT = tokenDto.getRefreshToken();
@@ -111,10 +110,14 @@ public class UserService {
 //                        .set("RT:" + user.getId(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
                 user.updateRT(RT);
+                Long expiration = jwtService.getExpiration(tokenDto.getAccessToken()); //accessToken 만료시간
+
                 return user.toPostLoginRes(tokenDto);
             }else {
                 throw new BaseException(FAILED_TO_LOGIN);
             }
+
+
         } catch (Exception e) {
             throw new BaseException(FAILED_TO_LOGIN);
         }
@@ -204,6 +207,19 @@ public class UserService {
         }
     }
 
+
+
+    //유저정보수정_아이디_현재아이디가져오기
+    public String getUserId(Long userIdx)throws BaseException{
+        try{
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+            String userId = userEntity.getUserId();
+            return userId;
+        }catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     //유저정보수정_아이디
     public void modifyUserId(PatchUserIdReq patchUserIdReq)throws BaseException{
 
@@ -243,6 +259,7 @@ public class UserService {
                 throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
             }
             userEntity.updatePassword(newPassword);
+            userEntity.setStatus(0);
             //userRepository.updateUserId(newUserId, userIdx);
 
         } catch (Exception exception){
@@ -269,12 +286,26 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+    //프로필설정_이름, 아이디 불러오기
+    public GetUsersProfileRes getUsers(Long userIdx)throws BaseException{
+        try{
+            UserEntity user = userRepository.findById(userIdx).get();
+            String name = user.getName();
+            String userId = user.getUserId();
+
+            GetUsersProfileRes getUsersProfileRes = new GetUsersProfileRes(name, userId);
+            return getUsersProfileRes;
+
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     //회원정보설정_알림
     public void postUserAlarm(PostUserAlarmReq postUserAlarmReq)throws BaseException{
         try{
             UserEntity userEntity = userRepository.findById(postUserAlarmReq.getUserIdx()).get();
             boolean alarm = postUserAlarmReq.isAlarm();
-
             userEntity.saveAlarm(alarm);
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -283,32 +314,42 @@ public class UserService {
     //아이디찾기
     public void findUserId(FindUserIdReq findUserIdReq)throws BaseException{
         try{
-
-            System.out.println("-------------서비스로 넘어왔느냐?------------");
-            //TODO: 해당 이메일로 아이디 보내기
             //해당 이메일을 가진 userEntity찾기
-            try{
-                UserEntity userEntity = userRepository.findByEmail(findUserIdReq.getEmail());
-                //userEntity에서 name과 userId 추출 후 해당이메일로 보내기
-                String name = userEntity.getName();
-                String userId = userEntity.getUserId();
+            UserEntity userEntity = userRepository.findByEmail(findUserIdReq.getEmail());
+            System.out.println("-------------해당이메일이 있느냐?------------"+userEntity);
+            //userEntity에서 name과 userId 추출 후 해당이메일로 보내기
+            String name = userEntity.getName();
+            String userId = userEntity.getUserId();
 
-                System.out.println("---------name & userId--------"+name+"     "+userId);
+            System.out.println("---------name & userId--------"+name+"     "+userId);
 
-                SimpleMailMessage message = new SimpleMailMessage();
-                message.setTo(findUserIdReq.getEmail());
-                message.setSubject("[머니뭐니] "+ name +"님의 아이디를 보내드립니다.");
-                message.setText(name+"님의 아이디: "+userId);
+            MailHandler mailHandler = new MailHandler(javaMailSender);
+            mailHandler.setTo(findUserIdReq.getEmail());
+            mailHandler.setSubject("[머니뭐니] "+ name +"님의 아이디를 보내드립니다.");
+            mailHandler.setText(name+"님의 아이디: "+userId);
+            //mailHandler.setFrom("머니뭐니 주식회사");
+            mailHandler.send();
 
-                System.out.println("-------메일 발송이 되었느냐??--------");
-            }catch (Exception e){
-                throw new BaseException(INVALID_EMAIL);
-            }
-
-
-        }catch (Exception exception){
-            throw new BaseException(DATABASE_ERROR);
+            System.out.println("-------메일 발송이 되었느냐??--------");
+        }catch (Exception e){
+            throw new BaseException(INVALID_EMAIL);
         }
+
+    }
+    //랜덤함수로 임시비밀번호 구문 만들기
+    public String getTempPassword(){
+        char[] charSet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+
+        String str = "";
+
+        // 문자 배열 길이의 값을 랜덤으로 10개를 뽑아 구문을 작성함
+        int idx = 0;
+        for (int i = 0; i < 10; i++) {
+            idx = (int) (charSet.length * Math.random());
+            str += charSet[idx];
+        }
+        return str;
     }
 
     //비밀번호 찾기
@@ -316,16 +357,33 @@ public class UserService {
         try{
             //해당 아이디를 가진 userEntity찾기
             UserEntity userEntity = userRepository.findByUserId(findPasswordReq.getUserId());
+            String name = userEntity.getName();
+
+            //임시비밀번호 발급 후 전달(status=1). 이때 status==1이면 무조건 비밀번호를 갱신해야 사용할 수 있도록
+            String tmpPassword = getTempPassword();
+            //임시비밀번호 암호화
+            String tmpPassword2;
+            try{
+                // 암호화: patchPasswordReq에서 제공받은 비밀번호를 보안을 위해 암호화시켜 DB에 저장합니다.
+                tmpPassword2 = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(tmpPassword);
+            } catch (Exception ignored){
+                throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+            }
+            userEntity.updatePassword(tmpPassword2);
+            userEntity.setStatus(1);//1은 임시상태
             //해당 아이디가 존재하면 해당 이메일로 메일보내기
-//            SimpleMailMessage message = new SimpleMailMessage();
-//            message.setTo(findPasswordReq.getEmail());
-//            message.setSubject("[머니뭐니] 비밀번호를 재설정해주세요");
-//            message.setText("비밀번호 재설정");
-//            javaMailSender.send(message);
+            MailHandler mailHandler = new MailHandler(javaMailSender);
+            mailHandler.setTo(findPasswordReq.getEmail());
+            mailHandler.setSubject("[머니뭐니] "+ name +"님의 임시비밀번호 안내 이메일입니다.");
+            mailHandler.setText(name+"님, 안녕하세요. 머니뭐니 임시비밀번호 안내 관련 이메일 입니다." + " 회원님의 임시 비밀번호는 "
+                    + tmpPassword + " 입니다." + "로그인 후에 비밀번호를 변경을 해주세요");
+            //mailHandler.setFrom("머니뭐니 주식회사");
+            mailHandler.send();
         }catch (Exception exception){
             throw new BaseException(INVALID_USER_ID);
         }
     }
+
 
 
     //비밀번호재설정

@@ -76,17 +76,6 @@ public class UserController {
             return new BaseResponse<>(CHECK_USER_ID);
         }
 
-        //아이디, 이름, 비번 notEmpty
-        if(postUserReq.getUserId()==null || postUserReq.getUserId()==""){
-            return new BaseResponse<>(USERS_EMPTY_USER_ID);
-        }
-        if(postUserReq.getName()==null || postUserReq.getName()==""){
-            return new BaseResponse<>(USERS_EMPTY_USER_NAME);
-        }
-        if(postUserReq.getPassword()==null || postUserReq.getPassword()==""){
-            return new BaseResponse<>(INVALID_USER_PASSWORD);
-        }
-
         String pw2 = postUserReq.getConfirmPassword();
 
         //비밀번호중복확인(비밀번호 2번입력 확인차)
@@ -154,14 +143,6 @@ public class UserController {
         try {
             // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
             // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
-            if(postLoginReq.getUserId()==null || postLoginReq.getUserId()==""){
-                return new BaseResponse<>(USERS_EMPTY_USER_ID);
-            }
-            if(postLoginReq.getPassword()==null || postLoginReq.getPassword()==""){
-                return new BaseResponse<>(INVALID_USER_PASSWORD);
-            }
-
-
             PostLoginRes postLoginRes = userService.login(postLoginReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
@@ -200,7 +181,22 @@ public class UserController {
         } catch(BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
+    }
 
+    /**
+     * 유저정보수정_아이디_현재아이디가져오기 API
+     * [GET] /users/{userIdx}
+     * */
+    @ResponseBody
+    @GetMapping("/{userIdx}")
+    public BaseResponse<String> getUserId(@PathVariable("userIdx") Long userIdx){
+        String result;
+        try{
+            String userId = userService.getUserId(userIdx);
+            return new BaseResponse<>(userId);
+        }catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
     /**
@@ -233,7 +229,6 @@ public class UserController {
             }else{
                 //같다면 유저네임 변경
                 userService.modifyUserId(patchUserIdReq);
-
                 result = "회원정보가 수정되었습니다.";
             }
 
@@ -247,31 +242,24 @@ public class UserController {
     @ResponseBody
     @PatchMapping("/modifyPassword")
     public BaseResponse<String> modifyPassword(@Valid @RequestBody PatchPasswordReq patchPasswordReq) {
+        String result;
         try {
+            System.out.println("---------------컨트롤러의 시작------------------");
             int userIdxByJwt = jwtService.getUserIdx();
             if (patchPasswordReq.getUserIdx() != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            //비번, userIdx notEmpty
-            if(patchPasswordReq.getUserIdx()==null){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-            if(patchPasswordReq.getNewPassword()==null || patchPasswordReq.getNewPassword()==""){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-            if(patchPasswordReq.getConfirmNewPassword()==null || patchPasswordReq.getConfirmNewPassword()==""){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-
-
+            System.out.println("----------------------------------");
             //비밀번호중복확인
             if(!patchPasswordReq.getNewPassword().equals(patchPasswordReq.getConfirmNewPassword())){
+                System.out.println("비밀번호가 다릅니다. 다시 확인 부탁");
                 return new BaseResponse<>(INVALID_USER_PASSWORD);
+            }else{
+                //같다면 유저비밀번호 변경
+                System.out.println("--------------바로 여기로 넘어가나?_---------------------");
+                userService.modifyPassword(patchPasswordReq);
+                result = "회원정보가 수정되었습니다.";
             }
-            //같다면 유저비밀번호 변경
-            userService.modifyPassword(patchPasswordReq);
-
-            String result = "회원정보가 수정되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -290,12 +278,6 @@ public class UserController {
             if (jwtServiceUserIdx != deleteUserReq.getUserIdx()) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-
-            //userIdx not Empty
-            if(deleteUserReq.getUserIdx()==null){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-
             userService.deleteUser(deleteUserReq);
 
             String result = "회원정보가 탈퇴되었습니다.";
@@ -322,6 +304,21 @@ public class UserController {
             String result = "프로필 사진이 정상적으로 업로드되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
+     * 프로필설정_이름, 아이디 불러오기 API
+     * [GET] /users/profile/{userIdx}
+     * */
+    @ResponseBody
+    @GetMapping("/profile/{userIdx}")
+    public BaseResponse<GetUsersProfileRes> getUsers(@PathVariable("userIdx") Long userIdx){
+        try{
+            GetUsersProfileRes getUsersProfileRes = userService.getUsers(userIdx);
+            return new BaseResponse<>(getUsersProfileRes);
+        }catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
