@@ -4,7 +4,9 @@ import com.example.demo.src.goal.model.GoalEntity;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +59,7 @@ public class UserEntity {
     public PostLoginRes toPostLoginRes(TokenDto tokenDto) {
         return new PostLoginRes(id, tokenDto);
     }
+
 
 
     public void updateUserId(String newUserId){

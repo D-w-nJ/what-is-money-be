@@ -1,3 +1,5 @@
+#google계정 정보(메일발송)이 들어있으므로 application.yml은 gitignore해줘야함!
+
 server:
   port: 9000  # 9000번 포트로 실행
 
@@ -22,6 +24,32 @@ spring:
       naming:
         # naming strategy를 hibernate꺼로 바꿔줘야 테이블명을 설정한 그대로 쓸 수 있다.
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: whatismoney00
+    password: xianuiymuhbgugxp
+    properties:
+        mail:
+          smtp:
+            auth: true
+            timeout: 5000
+            starttls:
+              enable: true
+
+#  mail:
+#    #host, port는 naver에서 정해준 값
+#    host: smtp.naver.com
+#    port: 465
+#    #본인 naver 계정정보 삽입
+#    username: jessicadbstjdi@naver.com
+#    password: dbstj0914!
+#    #전송하기 위한 prop으로 ssl의 신뢰, 권한 등 사용허가
+#    properties:
+#      mail.smtp.auth: true
+#      mail.smtp.ssl.enable: true
+#      mail.smtp.ssl.trust: smtp.naver.com
 
 # JPA log
 logging.level:

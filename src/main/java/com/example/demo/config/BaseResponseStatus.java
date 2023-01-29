@@ -32,11 +32,13 @@ public enum BaseResponseStatus {
     USERS_EXISTS_USER_ID(false, 2013, "이미 사용중인 아이디입니다."),
     CHECK_USER_ID(false, 2014, "아이디 중복확인을 해주세요."),
     FAIL_START_PAGE(false, 2015, "메인페이지 시작 실패"),
+    INVALID_USER_ID(false, 2016, "존재하지 않는 아이디"),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
     POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
+    INVALID_EMAIL(false, 2018, "가입하신 적이 없는 이메일입니다."),
 
     // [POST] /category
     POST_CATEGORY_EMPTY_NAME(false, 2018, "카테고리 명을 입력해주세요."),
