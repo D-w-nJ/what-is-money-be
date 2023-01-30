@@ -37,22 +37,30 @@ spring:
             timeout: 5000
             starttls:
               enable: true
+  ## FilePath
+  file:
+    path: /Users/choyoonseo/Library/CloudStorage/OneDrive-개인/모시공/2-2/Spring/image
+
 
 #  mail:
-#    #host, port는 naver에서 정해준 값
 #    host: smtp.naver.com
 #    port: 465
-#    #본인 naver 계정정보 삽입
-#    username: jessicadbstjdi@naver.com
-#    password: dbstj0914!
-#    #전송하기 위한 prop으로 ssl의 신뢰, 권한 등 사용허가
+#    username: whatismoney00@naver.com
+#    password: mnmn123qwe!
 #    properties:
-#      mail.smtp.auth: true
-#      mail.smtp.ssl.enable: true
-#      mail.smtp.ssl.trust: smtp.naver.com
+#      mail:
+#        smtp:
+#          auth: true
+#          ssl:
+#            enable: true
+#            trust: smtp.naver.com
+#          starttls:
+#            enable: true
+
 
 # JPA log
 logging.level:
     org.hibernate:
         SQL: DEBUG # 하이버네이터가 생성하고 실행하는 SQL을 확인할 수 있다.
         type.descriptor.sql.BasicBinder: TRACE # SQL에 바인딩되는 파라미터를 확인할 수 있다.
+

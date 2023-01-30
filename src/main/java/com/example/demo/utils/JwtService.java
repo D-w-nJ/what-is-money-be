@@ -66,6 +66,7 @@ public class JwtService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .refreshTokenExpirationTime(REFRESH_TOKEN_EXPIRE_TIME)
+                .accessTokenExpirationTime(ACCESS_TOKEN_EXPIRE_TIME)
                 .build();
 
 

@@ -1,7 +1,6 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseResponseStatus;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -9,8 +8,8 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.validation.Valid;
@@ -43,11 +42,14 @@ public class UserController {
     private final JwtService jwtService; // JWT부분은 7주차에 다루므로 모르셔도 됩니다!
     @Autowired
     private final UserService userService;
+    private final UserRepository userRepository;
 
 
-    public UserController(JwtService jwtService, UserService userService) {
+    public UserController(JwtService jwtService, UserService userService,
+                          UserRepository userRepository) {
         this.jwtService = jwtService; // JWT부분은 7주차에 다루므로 모르셔도 됩니다!
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     // ******************************************************************************
@@ -125,6 +127,10 @@ public class UserController {
     @GetMapping("/start/{userIdx}")
     public BaseResponse<String> startPage(@PathVariable("userIdx") Long userIdx){
         try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
             String name = userService.startPage(userIdx);
             String result = name+"님, 어서오세요!";
             return new BaseResponse<>(result);
@@ -155,12 +161,10 @@ public class UserController {
      * */
     @ResponseBody
     @PostMapping("/reissue")
-    public BaseResponse<String> reissue(@Valid @RequestBody Reissue reissue) {
+    public BaseResponse<ReissueRes> reissue(@Valid @RequestBody ReissueReq reissueReq) {
         try{
-            TokenDto tokenDto = userService.reissue(reissue);
-
-            String newAccessToken = "New AccessToken: "+tokenDto.getAccessToken();
-            return new BaseResponse<>(newAccessToken);
+            ReissueRes reissueRes = userService.reissue(reissueReq);
+            return new BaseResponse<>(reissueRes);
         }catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
@@ -190,8 +194,11 @@ public class UserController {
     @ResponseBody
     @GetMapping("/{userIdx}")
     public BaseResponse<String> getUserId(@PathVariable("userIdx") Long userIdx){
-        String result;
         try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
             String userId = userService.getUserId(userIdx);
             return new BaseResponse<>(userId);
         }catch (BaseException exception) {
@@ -208,6 +215,10 @@ public class UserController {
     public BaseResponse<String> modifyUserId(@Valid @RequestBody PatchUserIdReq patchUserIdReq) {
         String result;
         try {
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != patchUserIdReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
             System.out.println("--------------------------------");
             int userIdxByJwt = jwtService.getUserIdx();
             //Long으로 타입 변환
@@ -244,6 +255,10 @@ public class UserController {
     public BaseResponse<String> modifyPassword(@Valid @RequestBody PatchPasswordReq patchPasswordReq) {
         String result;
         try {
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != patchPasswordReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
             System.out.println("---------------컨트롤러의 시작------------------");
             int userIdxByJwt = jwtService.getUserIdx();
             if (patchPasswordReq.getUserIdx() != userIdxByJwt) {
@@ -289,11 +304,11 @@ public class UserController {
 
     /**
      * 회원정보설정_이미지 API
-     * [POST] /users/profile
+     * [POST] /users/profile/{userIdx}/{file}
      */
     @ResponseBody
     @PostMapping("/profile")
-    public BaseResponse<String> postUserImage(@RequestBody PostUserImageReq postUserImageReq) {
+    public BaseResponse<String> postUserImage(PostUserImageReq postUserImageReq) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != postUserImageReq.getUserIdx()) {
@@ -316,6 +331,10 @@ public class UserController {
     @GetMapping("/profile/{userIdx}")
     public BaseResponse<GetUsersProfileRes> getUsers(@PathVariable("userIdx") Long userIdx){
         try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
             GetUsersProfileRes getUsersProfileRes = userService.getUsers(userIdx);
             return new BaseResponse<>(getUsersProfileRes);
         }catch (BaseException exception) {
@@ -332,6 +351,10 @@ public class UserController {
     public BaseResponse<String> postUserAlarm(@RequestBody PostUserAlarmReq postUserAlarmReq){
         String result;
         try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != postUserAlarmReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
             userService.postUserAlarm(postUserAlarmReq);
 
             if(postUserAlarmReq.isAlarm()==true){
@@ -354,13 +377,6 @@ public class UserController {
     @ResponseBody
     @PostMapping("/findUserId")
     public BaseResponse<String> findUserId(@Valid @RequestBody FindUserIdReq findUserIdReq){
-        if (findUserIdReq.getEmail() == null) {
-            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
-        }
-        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
-        if (!isRegexEmail(findUserIdReq.getEmail())) {
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
         try {
             userService.findUserId(findUserIdReq);
             System.out.println("-----------실행??------------");
@@ -378,19 +394,25 @@ public class UserController {
     @ResponseBody
     @PostMapping("/findPassword")
     public BaseResponse<String> findPassword(@Valid @RequestBody FindPasswordReq findPasswordReq){
-        if(findPasswordReq.getUserId() == null){
-            return new BaseResponse<>(USERS_EMPTY_USER_ID);
-        }
-        if (findPasswordReq.getEmail() == null) {
-            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
-        }
-        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
-        if (!isRegexEmail(findPasswordReq.getEmail())) {
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
+        String result;
         try{
-            userService.findPassword(findPasswordReq);
-            String result = "이메일로 비밀번호를 재설정할 수 있는 메일이 발송되었습니다.";
+            UserEntity userEntity = userRepository.findByUserId(findPasswordReq.getUserId());
+            try{
+                //해당아이디가 존재하는지 확인
+                String name = userEntity.getName();
+            }catch (Exception e){
+                throw new BaseException(INVALID_USER_ID);
+            }
+            //해당 이메일이 존재하는지 확인
+            String email = userEntity.getEmail();
+            if(email.equals(findPasswordReq.getEmail())==false){
+                System.out.println("이 이메일은 등록된 정보가 없다이말이야~~제발멈춰~~~~");
+                return new BaseResponse<>(INVALID_EMAIL);
+            }else{
+                userService.findPassword(findPasswordReq);
+                result = "이메일로 비밀번호를 재설정할 수 있는 메일이 발송되었습니다.";
+            }
+
             return new BaseResponse<>(result);
 
         }catch (BaseException exception) {
