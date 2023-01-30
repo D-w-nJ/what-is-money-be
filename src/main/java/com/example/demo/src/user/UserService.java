@@ -7,9 +7,7 @@ import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,13 @@ import javax.transaction.Transactional;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +31,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisTemplate redisTemplate;
 
     //메일전송
-    @Autowired
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
+    @Value("${spring.mail.username}")
+    private String from;
+    @Value("${spring.file.path}")
+    private String uploadFolder;
 
     //회원가입
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
@@ -99,19 +106,25 @@ public class UserService {
         }
         try {
             UserEntity user = userRepository.findByUserId(postLoginReq.getUserId());
-            //임시회원일 때는 status==1
-            if (user.getStatus()==1||user.getPassword().equals(password)) { //임시회원이거나 비밀번호가 같다면
+
+            //임시회원이라면
+            if(user.getStatus()==1){
+                if(user.getPassword().equals(password)){
+                    //인증 정보를 기반으로 JWT 토큰 생성
+                    TokenDto tokenDto = jwtService.createJwt(user.getId());
+                    //db에 refresh토큰 저장
+                    String refreshToken = tokenDto.getRefreshToken();
+                    user.setRT(refreshToken);
+                    return user.toPostLoginRes(tokenDto);
+                }
+            }
+            //일반회원이라면
+            if (user.getPassword().equals(password)) { //비밀번호가 같다면
                 //인증 정보를 기반으로 JWT 토큰 생성
                 TokenDto tokenDto = jwtService.createJwt(user.getId());
-                String RT = tokenDto.getRefreshToken();
-
-                //RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
-//                redisTemplate.opsForValue()
-//                        .set("RT:" + user.getId(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-
-                user.updateRT(RT);
-                Long expiration = jwtService.getExpiration(tokenDto.getAccessToken()); //accessToken 만료시간
-
+                //db에 refresh토큰 저장
+                String refreshToken = tokenDto.getRefreshToken();
+                user.setRT(refreshToken);
                 return user.toPostLoginRes(tokenDto);
             }else {
                 throw new BaseException(FAILED_TO_LOGIN);
@@ -130,9 +143,9 @@ public class UserService {
 //    4. 만약 일치한다면 로그인 했을 때와 동일하게 새로운 토큰을 생성해서 클라이언트에게 전달합니다.
 //    5. Refresh Token 은 재사용하지 못하게 저장소에서 값을 갱신해줍니다.
 
-    public TokenDto reissue(Reissue reissue)throws BaseException{
+    public ReissueRes reissue(ReissueReq reissueReq)throws BaseException{
         //1. Refresh Token 검증
-        if (!JwtService.validateToken(reissue.getRefreshToken())){
+        if (!JwtService.validateToken(reissueReq.getRefreshToken())){
             throw new RuntimeException("refresh token이 유효하지 않습니다.");
         }
 
@@ -153,22 +166,24 @@ public class UserService {
         if(refreshToken==null || refreshToken=="") {
             throw new BaseException(EMPTY_RT);
         }
-        if(!refreshToken.equals(reissue.getRefreshToken())) {
+        if(!refreshToken.equals(reissueReq.getRefreshToken())) {
             throw new BaseException(INVALID_RT);
         }
 
-        // 5. 새로운 토큰 생성
+        // 5. 새로운 토큰 생성(access토큰과 refresh토큰 둘 다 생성)
         TokenDto tokenDto = jwtService.createJwt(id2);
-        String newAccessToken = tokenDto.getRefreshToken();
+        String newAccessToken = tokenDto.getAccessToken();
+        Long accessTokenExpiration = tokenDto.getAccessTokenExpirationTime();
         System.out.println("---------새로운토큰 생성??-------newAccessToken?? "+newAccessToken);
+        //Long expiration = jwtService.getExpiration(newAccessToken);
 
-        //6. RefreshToken Redis 업데이트
-//        redisTemplate.opsForValue()
-//                .set("RT:" + userEntity.getId(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-        //userEntity.updateRT(tokenDto.getRefreshToken());
+        //6. RefreshToken 업데이트
+        String newRefreshToken = tokenDto.getRefreshToken();
+        userEntity.updateRT(newRefreshToken);
 
-        //7. 토큰 발급
-        return tokenDto;
+        //7. 토큰 발급(access토큰과 access토큰 만료시간 반환)
+        ReissueRes reissueRes = new ReissueRes(newAccessToken, accessTokenExpiration);
+        return reissueRes;
     }
 
     //로그아웃
@@ -185,11 +200,6 @@ public class UserService {
 
             System.out.println("------userRepository.findById(id2)????-------"+userRepository.findById(id2));
 
-            // 3. Redis 에서 해당 id로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-//            if (redisTemplate.opsForValue().get("RT:" + id2) != null) {
-//                // Refresh Token 삭제
-//                redisTemplate.delete("RT:" + id2);
-//            }
             //3.DB에 해당 id로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
             UserEntity userEntity = userRepository.findById(id2).get();
             String refreshToken = userEntity.getRT();
@@ -198,9 +208,11 @@ public class UserService {
                 userEntity.setRT(null);
             }
             // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
-//            Long expiration = jwtService.getExpiration(postLogoutReq.getAccessToken());
+            Long expiration = jwtService.getExpiration(postLogoutReq.getAccessToken());
 //            redisTemplate.opsForValue()
 //                    .set(postLogoutReq.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+            postLogoutReq.setAccessToken("logout");
+            System.out.println("--------여기서 문제???----------------");
 
         } catch(Exception e){
             throw new BaseException(SERVER_ERROR);
@@ -278,9 +290,21 @@ public class UserService {
     public void postUserImage(PostUserImageReq postUserImageReq) throws BaseException{
         try{
             UserEntity userEntity = userRepository.findById(postUserImageReq.getUserIdx()).get();
-            String image = postUserImageReq.getImage();
+            System.out.println("------userEntity??---------"+userEntity);
+            UUID uuid = UUID.randomUUID(); //이미지 고유성 보장
+            System.out.println("--------------uuid----------"+uuid);
+            String imageFileName = uuid+"_"+postUserImageReq.getImage().getOriginalFilename();
+            System.out.println("--------imageFileName??---------"+imageFileName);
+            Path imageFilePath = Paths.get(uploadFolder + "/" + imageFileName);
+            System.out.println("--------path??---------"+imageFilePath);
 
-            userEntity.saveImage(image);
+            try{
+                Files.write(imageFilePath, postUserImageReq.getImage().getBytes());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            userEntity.setImage(imageFileName);
 
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -313,26 +337,43 @@ public class UserService {
     }
     //아이디찾기
     public void findUserId(FindUserIdReq findUserIdReq)throws BaseException{
+        String name;
+        String userId;
         try{
             //해당 이메일을 가진 userEntity찾기
-            UserEntity userEntity = userRepository.findByEmail(findUserIdReq.getEmail());
-            System.out.println("-------------해당이메일이 있느냐?------------"+userEntity);
-            //userEntity에서 name과 userId 추출 후 해당이메일로 보내기
-            String name = userEntity.getName();
-            String userId = userEntity.getUserId();
+            try{
+                UserEntity userEntity = userRepository.findByEmail(findUserIdReq.getEmail());
+                System.out.println("-------------해당이메일이 있느냐?------------"+userEntity);
+                //userEntity에서 name과 userId 추출 후 해당이메일로 보내기
+                name = userEntity.getName();
+                userId = userEntity.getUserId();
+            }catch (Exception e){
+                throw new BaseException(INVALID_EMAIL);
+            }
 
             System.out.println("---------name & userId--------"+name+"     "+userId);
 
+            //네이버
+//            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+//            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+//            mimeMessageHelper.setTo(findUserIdReq.getEmail());
+//            mimeMessageHelper.setSubject("[머니뭐니] "+ name +"님의 아이디를 보내드립니다.");
+//            mimeMessageHelper.setText(name+"님의 아이디: "+userId);
+//
+//            javaMailSender.send(mimeMessage);
+
+
+            //이메일보내기
             MailHandler mailHandler = new MailHandler(javaMailSender);
+            mailHandler.setFrom(from); //이거 naver메일 보낼때는 필수다!!!!!!
             mailHandler.setTo(findUserIdReq.getEmail());
             mailHandler.setSubject("[머니뭐니] "+ name +"님의 아이디를 보내드립니다.");
             mailHandler.setText(name+"님의 아이디: "+userId);
-            //mailHandler.setFrom("머니뭐니 주식회사");
             mailHandler.send();
 
             System.out.println("-------메일 발송이 되었느냐??--------");
         }catch (Exception e){
-            throw new BaseException(INVALID_EMAIL);
+            throw new BaseException(DATABASE_ERROR);
         }
 
     }
@@ -355,7 +396,6 @@ public class UserService {
     //비밀번호 찾기
     public void findPassword(FindPasswordReq findPasswordReq)throws BaseException{
         try{
-            //해당 아이디를 가진 userEntity찾기
             UserEntity userEntity = userRepository.findByUserId(findPasswordReq.getUserId());
             String name = userEntity.getName();
 
@@ -379,6 +419,7 @@ public class UserService {
                     + tmpPassword + " 입니다." + "로그인 후에 비밀번호를 변경을 해주세요");
             //mailHandler.setFrom("머니뭐니 주식회사");
             mailHandler.send();
+
         }catch (Exception exception){
             throw new BaseException(INVALID_USER_ID);
         }

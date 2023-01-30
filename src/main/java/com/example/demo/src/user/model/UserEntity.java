@@ -42,6 +42,7 @@ public class UserEntity {
     @Column(name = "refresh_token")
     private String RT;
 
+
     @OneToMany(mappedBy = "user_id")
     private List<GoalEntity> goalEntityList = new ArrayList<>();
 
@@ -67,9 +68,6 @@ public class UserEntity {
     }
     public void updatePassword(String newPassword){
         this.password = newPassword;
-    }
-    public void saveImage(String image){
-        this.image = image;
     }
     public void saveAlarm(boolean alarm){
         this.alarm = alarm;

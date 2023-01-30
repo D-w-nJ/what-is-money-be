@@ -75,6 +75,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    //회원 프로필 사진 업로드
+    implementation 'commons-io:commons-io:2.6'
 }
 
 test {

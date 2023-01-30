@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-public class Reissue {
+public class ReissueReq {
     @NotEmpty(message = "accessToken 을 입력해주세요.")
     private String accessToken;
 
