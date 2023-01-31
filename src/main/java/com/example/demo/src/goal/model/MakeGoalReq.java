@@ -46,6 +46,7 @@ public class MakeGoalReq {
                 .init_amount(initAmount)
                 .category_name(category_name)
                 .user_id(userEntity)
+                .amount(initAmount)
                 .date(reDate)
                 .build();
     }
