@@ -116,7 +116,7 @@ public class GoalService {
 
             // CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
             UserEntity userEntity = userRepository.findById(userIdx).get();
-            goalRepository.updateGoal(goalAmount, amount, category_name, userEntity, goalIdx);
+            goalRepository.updateGoal(goalAmount, amount, category_name, userEntity, goalIdx, goalImage);
 
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
