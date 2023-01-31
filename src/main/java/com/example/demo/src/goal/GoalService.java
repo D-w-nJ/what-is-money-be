@@ -109,14 +109,14 @@ public class GoalService {
     public void modifyGoal(Long goalIdx, Long userIdx, ModifyGoalReq modifyGoalReq) throws BaseException{
         try{
              int goalAmount = modifyGoalReq.getGoal_amount();
-             int initAmount =  modifyGoalReq.getInit_amount();
+             int amount =  modifyGoalReq.getAmount();
              // Long categoryIdx = modifyGoalReq.getCategoryIdx();
              String goalImage = modifyGoalReq.getImage();
              String category_name = modifyGoalReq.getCategory_name();
 
             // CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
             UserEntity userEntity = userRepository.findById(userIdx).get();
-            goalRepository.updateGoal(goalAmount, initAmount, category_name, userEntity, goalIdx);
+            goalRepository.updateGoal(goalAmount, amount, category_name, userEntity, goalIdx, goalImage);
 
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
