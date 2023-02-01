@@ -86,7 +86,7 @@ public class RecordController {
      * [GET] /daily-records
      */
     @ResponseBody
-    @GetMapping("/daily-records")
+    @PostMapping("/daily-records")
     public BaseResponse<GetRecordRes> getDailyRecords(@RequestBody GetRecordReq getRecordReq) {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
