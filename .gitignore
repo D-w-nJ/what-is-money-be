@@ -209,3 +209,4 @@ gradle-app.setting
 ### src ###
 logs/app.log
 logs/error.log
+#src/main/resources/application.yml

@@ -10,4 +10,6 @@ import lombok.Setter;
 public class GetUsersProfileRes {
     private String name;
     private String userId;
+    //이미지는 byte 배열 형태를 띄고 있다.
+    private byte[] image;
 }
