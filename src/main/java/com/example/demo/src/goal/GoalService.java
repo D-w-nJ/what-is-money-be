@@ -9,6 +9,7 @@ import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.goal.model.MakeGoalReq;
 import com.example.demo.src.goal.model.ModifyGoalReq;
+import com.example.demo.src.record.RecordRepository;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
@@ -33,6 +34,7 @@ public class GoalService {
     @Autowired
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final RecordRepository recordRepository;
 
 
     @Transactional
@@ -66,8 +68,11 @@ public class GoalService {
         }
     }
 
+    @Transactional
     public void deleteGoal(Long goalIdx) throws BaseException{
         try{
+            GoalEntity goalEntity = goalRepository.findById(goalIdx).get();
+            recordRepository.deleteRecordEntitiesByGoalEntity(goalEntity);
             goalRepository.deleteById(goalIdx);
         } catch (Exception exception){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);

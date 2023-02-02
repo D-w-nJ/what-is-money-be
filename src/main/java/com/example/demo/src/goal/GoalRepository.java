@@ -36,4 +36,5 @@ public interface GoalRepository extends JpaRepository<GoalEntity, Long> {
     @Query("update GoalEntity m set m.goal_amount = :goalAmount, m.amount = :amount, m.category_name = :category_name, m.user_id = :userEntity, m.image = :goalImage where m.id = :goalIdx")
     void updateGoal(@Param("goalAmount") int goalAmount, @Param("amount") int amount, @Param("category_name") String category_name, @Param("userEntity") UserEntity userEntity, @Param("goalIdx") Long goalIdx, @Param("goalImage") String goalImage);
 
+    GoalEntity findGoalEntityById(Long id);
 }
