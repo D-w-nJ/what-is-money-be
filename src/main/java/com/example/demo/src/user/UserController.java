@@ -324,7 +324,7 @@ public class UserController {
     }
 
     /**
-     * 프로필설정_이름, 아이디 불러오기 API
+     * 프로필설정_이름, 아이디, 이미지 불러오기 API
      * [GET] /users/profile/{userIdx}
      * */
     @ResponseBody
