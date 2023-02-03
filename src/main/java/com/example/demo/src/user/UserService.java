@@ -324,15 +324,48 @@ public class UserService {
         }
     }
     //프로필이미지 불러오기
-    public byte[] getUserImage(Long userIdx)throws BaseException{
+//    public byte[] getUserImage(Long userIdx)throws BaseException{
+//        try{
+//            UserEntity user = userRepository.findById(userIdx).get();
+//            System.out.println("------------userEntity-----------"+user);
+//            String imageName = user.getImage();
+//            System.out.println("image??"+imageName);
+//
+//            if(imageName==null){
+//                return null;
+//            }else{
+//                //이미지를 불러오기
+//                //해당 경로의 image를 FileInputstream의 객체를 만들어서
+//                //byte[] 형태의 값으로 incoding 후 보내게 된다
+//                System.out.println("여기서???"+uploadFolder);
+//                InputStream imageStream = new FileInputStream(uploadFolder+"/"+imageName);
+//                System.out.println("=============imageStream????====="+imageStream);
+//                byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+//                imageStream.close();
+//
+//                System.out.println("================imageByteArray???======"+imageByteArray);
+//                return imageByteArray;
+//
+//            }
+//
+//        }catch (Exception exception){
+//            throw new BaseException(DATABASE_ERROR);
+//        }
+//    }
+
+    //프로필설정_이름, 아이디, 이미지 불러오기
+    public GetUsersProfileRes getUsers(Long userIdx)throws BaseException{
+        GetUsersProfileRes getUsersProfileRes;
         try{
             UserEntity user = userRepository.findById(userIdx).get();
             System.out.println("------------userEntity-----------"+user);
+            String name = user.getName();
+            String userId = user.getUserId();
             String imageName = user.getImage();
             System.out.println("image??"+imageName);
 
             if(imageName==null){
-                return null;
+                getUsersProfileRes = new GetUsersProfileRes(name, userId, null);
             }else{
                 //이미지를 불러오기
                 //해당 경로의 image를 FileInputstream의 객체를 만들어서
@@ -344,25 +377,11 @@ public class UserService {
                 imageStream.close();
 
                 System.out.println("================imageByteArray???======"+imageByteArray);
-                return imageByteArray;
+
+                getUsersProfileRes = new GetUsersProfileRes(name, userId, imageByteArray);
 
             }
 
-        }catch (Exception exception){
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    //프로필설정_이름, 아이디 불러오기
-    public GetUsersProfileRes getUsers(Long userIdx)throws BaseException{
-        try{
-            UserEntity user = userRepository.findById(userIdx).get();
-            System.out.println("------------userEntity-----------"+user);
-            String name = user.getName();
-            String userId = user.getUserId();
-
-
-            GetUsersProfileRes getUsersProfileRes = new GetUsersProfileRes(name, userId);
             return getUsersProfileRes;
 
 
