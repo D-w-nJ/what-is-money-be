@@ -39,7 +39,13 @@ spring:
               enable: true
   ## FilePath
   file:
-    path: /Users/choyoonseo/Library/CloudStorage/OneDrive-개인/모시공/2-2/Spring/image
+    path: /Users/choyoonseo/Desktop/what-is-money_profileimage
+
+#  multipart:
+#    max-file-size: 10MB
+#    max-request-size: 10MB
+#    location: /Users/choyoonseo/Desktop/what-is-money_profileimage
+#    enabled: true
 
 
 #  mail:
