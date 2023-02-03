@@ -325,6 +325,25 @@ public class UserController {
     }
 
     /**
+     * 프로필이미지 불러오기 API
+     * [GET] /users/profileImage/{userIdx}
+     * */
+    @ResponseBody
+    @GetMapping("/profileImage/{userIdx}")
+    public BaseResponse<byte[]> getUserImage(@PathVariable("userIdx") Long userIdx){
+        try{
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            byte[] imageByteArray = userService.getUserImage(userIdx);
+            return new BaseResponse<>(imageByteArray);
+        }catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
      * 프로필설정_이름, 아이디, 이미지 불러오기 API
      * [GET] /users/profile/{userIdx}
      * */
