@@ -283,17 +283,18 @@ public class UserController {
 
     /**
      * 회원탈퇴 API
-     * [DELETE] /users/deleteUser
+     * [DELETE] /users/deleteUser/{userIdx}
      */
     @ResponseBody
-    @DeleteMapping("/deleteUser")
-    public BaseResponse<String> deleteUser(@RequestBody DeleteUserReq deleteUserReq) {
+    @DeleteMapping("/deleteUser/{userIdx}")
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") Long userIdx) {//@RequestBody DeleteUserReq deleteUserReq
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
-            if (jwtServiceUserIdx != deleteUserReq.getUserIdx()) {
+            if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            userService.deleteUser(deleteUserReq);
+            userService.deleteUser(userIdx);
+            System.out.println("==========이건되었나????==========");
 
             String result = "회원정보가 탈퇴되었습니다.";
             return new BaseResponse<>(result);
@@ -335,6 +336,7 @@ public class UserController {
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
+
             GetUsersProfileRes getUsersProfileRes = userService.getUsers(userIdx);
             return new BaseResponse<>(getUsersProfileRes);
         }catch (BaseException exception) {

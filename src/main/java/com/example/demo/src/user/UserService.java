@@ -170,7 +170,7 @@ public class UserService {
         // (추가) 로그아웃되어 DB 에 RefreshToken 이 존재하지 않는 경우 처리
         // 4. 가져온 Refresh Token값과 클라이언트 측으로부터 요청받은 Refresh Token값과 일치하는 지 검사
         if(refreshToken==null || refreshToken=="") {
-            throw new BaseException(EMPTY_RT);
+            throw new BaseException(EMPTY_ACCESSTOKEN);
         }
         if(!refreshToken.equals(reissueReq.getRefreshToken())) {
             throw new BaseException(INVALID_RT);
@@ -199,12 +199,14 @@ public class UserService {
             if (!jwtService.validateToken(postLogoutReq.getAccessToken())) {
                 throw new RuntimeException("Access token이 유효하지 않습니다.");
             }
+            System.out.println("--------여기서 문제???----------------");
 
             // 2. Access Token 에서 id를 가져옵니다.
             int id = jwtService.getUserIdx();
+            System.out.println("=========id???=========="+id);
             Long id2 = Long.valueOf(id);
 
-            System.out.println("------userRepository.findById(id2)????-------"+userRepository.findById(id2));
+            System.out.println("----------------id2????-------"+id2);
 
             //3.DB에 해당 id로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
             UserEntity userEntity = userRepository.findById(id2).get();
@@ -213,12 +215,15 @@ public class UserService {
                 // Refresh Token 삭제
                 userEntity.setRT(null);
             }
-            // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
+            // 4. 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
             Long expiration = jwtService.getExpiration(postLogoutReq.getAccessToken());
+            System.out.println("=========expiration======"+expiration);
 //            redisTemplate.opsForValue()
 //                    .set(postLogoutReq.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+
+            //redisUtil.setBlackList(postLogoutReq.getAccessToken(), "access_token", expiration);
             postLogoutReq.setAccessToken("logout");
-            System.out.println("--------여기서 문제???----------------");
+            System.out.println("accesstoken??"+postLogoutReq.getAccessToken());
 
         } catch(Exception e){
             throw new BaseException(SERVER_ERROR);
@@ -285,9 +290,10 @@ public class UserService {
         }
     }
     //회원탈퇴
-    public void deleteUser(DeleteUserReq deleteUserReq)throws BaseException{
+    public void deleteUser(Long userIdx)throws BaseException{
         try{
-            userRepository.deleteById(deleteUserReq.getUserIdx());
+            userRepository.deleteById(userIdx);
+            System.out.println("=======실행되었나?=======");
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -318,21 +324,32 @@ public class UserService {
     }
     //프로필설정_이름, 아이디, 이미지 불러오기
     public GetUsersProfileRes getUsers(Long userIdx)throws BaseException{
+        GetUsersProfileRes getUsersProfileRes;
         try{
             UserEntity user = userRepository.findById(userIdx).get();
+            System.out.println("------------userEntity-----------"+user);
             String name = user.getName();
             String userId = user.getUserId();
             String imageName = user.getImage();
+            System.out.println("image??"+imageName);
 
-            //이미지를 불러오기
-            //해당 경로의 image를 FileInputstream의 객체를 만들어서
-            //byte[] 형태의 값으로 incoding 후 보내게 된다
-            InputStream imageStream = new FileInputStream(uploadFolder+"/"+imageName);
-            byte[] imageByteArray = IOUtils.toByteArray(imageStream);
-            imageStream.close();
+            if(imageName==null){
+                getUsersProfileRes = new GetUsersProfileRes(name, userId, null);
+            }else{
+                //이미지를 불러오기
+                //해당 경로의 image를 FileInputstream의 객체를 만들어서
+                //byte[] 형태의 값으로 incoding 후 보내게 된다
+                InputStream imageStream = new FileInputStream(uploadFolder+"/"+imageName);
+                System.out.println("=============imageStream????====="+imageStream);
+                byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+                imageStream.close();
 
-            GetUsersProfileRes getUsersProfileRes = new GetUsersProfileRes(name, userId, imageByteArray);
+                System.out.println("================imageByteArray???======"+imageByteArray);
+                getUsersProfileRes = new GetUsersProfileRes(name, userId, imageByteArray);
+            }
+
             return getUsersProfileRes;
+
 
         }catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
