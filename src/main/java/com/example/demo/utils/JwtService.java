@@ -96,9 +96,16 @@ public class JwtService {
     public int getUserIdx() throws BaseException {
         //1. JWT 추출
         String accessToken = getJwt();
+
         if (accessToken == null || accessToken.length() == 0) {
             throw new BaseException(EMPTY_JWT);
         }
+        System.out.println("=============accessToken???====="+accessToken);
+
+        if(accessToken=="logout"){
+            throw new BaseException(EMPTY_ACCESSTOKEN);
+        }
+
 
         // 2. JWT parsing
         Jws<Claims> claims;

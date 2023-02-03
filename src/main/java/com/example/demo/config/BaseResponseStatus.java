@@ -23,7 +23,7 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
     INVALID_RT(false, 2004, "Refresh Token 정보가 일치하지 않습니다."),
-    EMPTY_RT(false, 2005, "로그아웃된 사용자입니다."),
+    EMPTY_ACCESSTOKEN(false, 2005, "로그아웃된 사용자입니다."),
 
     // users
     USERS_EMPTY_USER_ID(false, 2010, "유저 아이디 값을 확인해주세요."),
@@ -33,6 +33,7 @@ public enum BaseResponseStatus {
     CHECK_USER_ID(false, 2014, "아이디 중복확인을 해주세요."),
     FAIL_START_PAGE(false, 2015, "메인페이지 시작 실패"),
     INVALID_USER_ID(false, 2016, "존재하지 않는 아이디"),
+    NO_IMAGE(false, 2017, "사진이 존재하지 않습니다."),
 
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),

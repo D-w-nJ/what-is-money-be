@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Entity //JPA가 사용하는 객체라는 뜻이다. 이 어노테이션이 있어야 JPA가 인식할 수 있다.
 @Table(name = "user")
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder @Data
+@Builder
 public class UserEntity {
 
     @Id //테이블의 PK와 해당 필드를 매핑한다.
