@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -37,4 +38,8 @@ public interface GoalRepository extends JpaRepository<GoalEntity, Long> {
     void updateGoal(@Param("goalAmount") int goalAmount, @Param("amount") int amount, @Param("category_name") String category_name, @Param("userEntity") UserEntity userEntity, @Param("goalIdx") Long goalIdx, @Param("goalImage") String goalImage);
 
     GoalEntity findGoalEntityById(Long id);
+
+    @Modifying
+    @Query("update GoalEntity m set m.amount = :amount where m.id=:goalIdx")
+    void updateAmount(@Param("amount") int amount, @Param("goalIdx") Long goalIdx);
 }

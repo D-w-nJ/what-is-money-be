@@ -2,6 +2,7 @@ package com.example.demo.src.record;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.src.category.CategoryRepository;
+import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.GoalRepository;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.record.model.*;
@@ -38,6 +39,7 @@ public class RecordService {
     final int LAST_INDEX_OF_DATETIME = 19;
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @Transactional
     public PostRecordRes createRecord(PostRecordReq postRecordReq) throws BaseException {
         try {
             RecordEntity record = postRecordReq.toEntity(
@@ -45,24 +47,36 @@ public class RecordService {
                     goalRepository.findById(postRecordReq.getGoalIdx()).orElse(null),
                     categoryRepository.findById(postRecordReq.getCategory()).orElse(null));
             recordRepository.save(record);
+            int newAmount = (record.getCategory().getFlag() == 0) ? record.getGoal().getAmount() + postRecordReq.getAmount() : record.getGoal().getAmount() - postRecordReq.getAmount();
+            goalRepository.updateAmount(newAmount, postRecordReq.getGoalIdx());
             return record.toPostRecordRes();
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
+    @Transactional
     public void deleteRecord(DeleteRecordReq deleteRecordReq) throws BaseException {
         try {
+            RecordEntity record = recordRepository.findById(deleteRecordReq.getRecordIdx()).orElse(null);
+            int newAmount = (record.getCategory().getFlag() == 0) ? record.getGoal().getAmount() - record.getAmount() : record.getGoal().getAmount() + record.getAmount();
+            goalRepository.updateAmount(newAmount, record.getGoal().getId());
             recordRepository.deleteById(deleteRecordReq.getRecordIdx());
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
+    @Transactional
     public void updateRecord(PatchRecordReq patchRecordReq) throws BaseException {
         try {
             String date = patchRecordReq.getDate().substring(0, LAST_INDEX_OF_DATETIME);
             RecordEntity record = recordRepository.findById(patchRecordReq.getRecordIdx()).orElse(null);
+            int originAmount = (record.getCategory().getFlag() == 0) ? -record.getAmount() : record.getAmount();
+            CategoryEntity category = categoryRepository.findById(patchRecordReq.getCategoryIdx()).orElse(null);
+            int newAmount = (category.getFlag() == 0) ? patchRecordReq.getAmount() : -patchRecordReq.getAmount();
+            GoalEntity goal = goalRepository.findById(record.getGoal().getId()).orElse(null);
+            goalRepository.updateAmount(goal.getAmount() + originAmount + newAmount, record.getGoal().getId());
             record.update(patchRecordReq.getAmount(),
                     categoryRepository.findById(patchRecordReq.getCategoryIdx()).orElse(null),
                     LocalDateTime.parse(date, format));
