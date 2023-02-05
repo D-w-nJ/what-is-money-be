@@ -20,7 +20,6 @@ public class GoalEntity {
     private String image; // 목표 이미지
     private int goal_amount; // 목표 금액
     private int amount; // 현재 금액
-    private float progress; // 진행률 퍼센트
     private LocalDateTime date; // 생설 날짜
 
     // name : 맵핑할 외래키의 이름

@@ -17,6 +17,7 @@ public class GetGoalRes {
     private String image;
     private int goal_amount;
     private int amount;
+    private int init_amount;
     private float progress;
     private String category_name;
     private LocalDateTime date;
@@ -24,12 +25,13 @@ public class GetGoalRes {
 
     // private Long userIdx;
 
-    public GetGoalRes(Long id, String image, int goal_amount, int amount, float progress, String category_name, LocalDateTime date) {
+    public GetGoalRes(Long id, String image, int goal_amount, int amount, int init_amount, String category_name, LocalDateTime date) {
         this.id = id;
         this.image = image;
         this.goal_amount = goal_amount;
         this.amount = amount;
-        this.progress = (float) amount / goal_amount;
+        this.init_amount = init_amount;
+        this.progress = ((float) amount / goal_amount) * 100;
         this.category_name = category_name;
         this.date = date;
         // this.userIdx = userIdx;
