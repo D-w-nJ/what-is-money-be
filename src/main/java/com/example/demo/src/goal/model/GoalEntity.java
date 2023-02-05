@@ -37,4 +37,3 @@ public class GoalEntity {
     @JoinColumn(name = "user_id",referencedColumnName = "id")
     private UserEntity user_id; // 외래키 : 어떤 유저의 목표인가?
 }
-
