@@ -8,7 +8,7 @@ spring:
     name: demo
 
   redis:
-    host: localhost #자신의 엔드포인트
+    host: what-is-money-be.mtfmsq.ng.0001.apn2.cache.amazonaws.com
     port: 6379
 
   datasource:
