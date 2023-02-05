@@ -139,7 +139,7 @@ public class GoalService {
     @Transactional
     public void uploadGoalImage(Long goalIdx, Long userIdx, ImageGoalReq imageGoalReq) throws BaseException{
         try{
-            UserEntity userEntity = userRepository.findById(userIdx).get();
+            GoalEntity goalEntity = goalRepository.findById(goalIdx).get();
             UUID uuid = UUID.randomUUID(); // 이미지의 고유성 보장
             String imageFileName = uuid+"_"+imageGoalReq.getImage().getOriginalFilename();
             Path imageFilePath = Paths.get(uploadFolder + "/" + imageFileName);
@@ -148,6 +148,8 @@ public class GoalService {
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
+
+            goalEntity.setImage(imageFileName); // image 설정
         } catch (Exception e){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "goal")
 @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder @Getter
+@Builder @Getter @Setter
 public class GoalEntity {
     @Id // 테이블의 PK 와 해당 필드를 매핑한다.
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // pk 생성값을 데이터베이스에서 생성하는 IDENTITY 방식을 사용한다.
