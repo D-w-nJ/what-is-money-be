@@ -5,23 +5,26 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.category.CategoryRepository;
 import com.example.demo.src.category.model.CategoryEntity;
-import com.example.demo.src.goal.model.GetGoalRes;
-import com.example.demo.src.goal.model.GoalEntity;
-import com.example.demo.src.goal.model.MakeGoalReq;
-import com.example.demo.src.goal.model.ModifyGoalReq;
+import com.example.demo.src.goal.model.*;
 import com.example.demo.src.record.RecordRepository;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +39,8 @@ public class GoalService {
     private final UserRepository userRepository;
     private final RecordRepository recordRepository;
 
+    @Value("${spring.file.path}")
+    private String uploadFolder;
 
     @Transactional
     public void createGoal(MakeGoalReq makeGoalReq, Long userIdx) throws BaseException {
@@ -130,6 +135,49 @@ public class GoalService {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
+
+    @Transactional
+    public void uploadGoalImage(Long goalIdx, Long userIdx, ImageGoalReq imageGoalReq) throws BaseException{
+        try{
+            UserEntity userEntity = userRepository.findById(userIdx).get();
+            UUID uuid = UUID.randomUUID(); // 이미지의 고유성 보장
+            String imageFileName = uuid+"_"+imageGoalReq.getImage().getOriginalFilename();
+            Path imageFilePath = Paths.get(uploadFolder + "/" + imageFileName);
+            try{
+                Files.write(imageFilePath, imageGoalReq.getImage().getBytes());
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        } catch (Exception e){
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+    /*
+    //회원정보설정_프로필사진
+    public void postUserImage(PostUserImageReq postUserImageReq) throws BaseException{
+        try{
+            UserEntity userEntity = userRepository.findById(postUserImageReq.getUserIdx()).get();
+            System.out.println("------userEntity??---------"+userEntity);
+            UUID uuid = UUID.randomUUID(); //이미지 고유성 보장
+            System.out.println("--------------uuid----------"+uuid);
+            String imageFileName = uuid+"_"+postUserImageReq.getImage().getOriginalFilename();
+            System.out.println("--------imageFileName??---------"+imageFileName);
+            Path imageFilePath = Paths.get(uploadFolder + "/" + imageFileName);
+            System.out.println("--------path??---------"+imageFilePath);
+
+            try{
+                Files.write(imageFilePath, postUserImageReq.getImage().getBytes());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            userEntity.setImage(imageFileName);
+
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+     */
 }
 
 

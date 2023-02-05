@@ -105,30 +105,45 @@ public class GoalController {
 
     @ResponseBody
     @GetMapping("/getGoal/{goalIdx}/{userIdx}")
-    public BaseResponse<GetGoalRes> getGoal(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx){
-        try{
+    public BaseResponse<GetGoalRes> getGoal(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx) {
+        try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
             GetGoalRes getGoalRes = goalService.getGoalRes(userIdx, goalIdx);
             return new BaseResponse<>(getGoalRes);
-        } catch (BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
 
     @ResponseBody
     @PatchMapping("/modifyGoal/{goalIdx}/{userIdx}")
-    public BaseResponse modifyGoal(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx, @RequestBody ModifyGoalReq modifyGoalReq){
-        try{
+    public BaseResponse modifyGoal(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx, @RequestBody ModifyGoalReq modifyGoalReq) {
+        try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
-            if(jwtServiceUserIdx != userIdx){
+            if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse(BaseResponseStatus.INVALID_USER_JWT);
             }
             goalService.modifyGoal(goalIdx, userIdx, modifyGoalReq);
             return new BaseResponse();
-        } catch (BaseException exception){
+        } catch (BaseException exception) {
+            return new BaseResponse(exception.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/uploadGoalImage/{goalIdx}/{userIdx}")
+    public BaseResponse uploadGoalImage(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx, @RequestBody ImageGoalReq imageGoalReq) {
+        try {
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != userIdx) {
+                return new BaseResponse(BaseResponseStatus.INVALID_USER_JWT);
+            }
+            goalService.uploadGoalImage(goalIdx, userIdx, imageGoalReq);
+            return new BaseResponse();
+        } catch (BaseException exception) {
             return new BaseResponse(exception.getStatus());
         }
     }

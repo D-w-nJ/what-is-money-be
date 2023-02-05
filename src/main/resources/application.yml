@@ -40,7 +40,7 @@ spring:
               enable: true
   ## FilePath
   file:
-    path: /media/what-is-money-image
+    path: /Users/iminseong/media
 
 #  multipart:
 #    max-file-size: 10MB
