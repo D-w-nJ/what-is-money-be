@@ -86,7 +86,7 @@ public class RecordController {
      * [GET] /daily-records
      */
     @ResponseBody
-    @GetMapping("/daily-records")
+    @GetMapping("/daily-records/{userIdx}/{goalIdx}/{date}")
     public BaseResponse<GetRecordRes> getDailyRecords(@PathVariable("userIdx") Long userIdx,
                                                       @PathVariable("goalIdx") Long goalIdx,
                                                       @PathVariable("date") String date) {
