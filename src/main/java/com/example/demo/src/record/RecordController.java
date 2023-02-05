@@ -86,14 +86,16 @@ public class RecordController {
      * [GET] /daily-records
      */
     @ResponseBody
-    @PostMapping("/daily-records")
-    public BaseResponse<GetRecordRes> getDailyRecords(@RequestBody GetRecordReq getRecordReq) {
+    @GetMapping("/daily-records")
+    public BaseResponse<GetRecordRes> getDailyRecords(@PathVariable("userIdx") Long userIdx,
+                                                      @PathVariable("goalIdx") Long goalIdx,
+                                                      @PathVariable("date") String date) {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
-            if (getRecordReq.getUserIdx() != userIdxByJwt) {
+            if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            GetRecordRes getRecordRes = recordService.getDailyRecords(getRecordReq, false);
+            GetRecordRes getRecordRes = recordService.getDailyRecords(goalIdx, date, false);
             return new BaseResponse<>(getRecordRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

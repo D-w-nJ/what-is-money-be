@@ -71,17 +71,17 @@ public class RecordService {
         }
     }
 
-    public GetRecordRes getDailyRecords(GetRecordReq getRecordReq, boolean part) throws BaseException {
+    public GetRecordRes getDailyRecords(Long goalIdx, String date, boolean part) throws BaseException {
         try {
-            String date = getRecordReq.getDate().substring(0, LAST_INDEX_OF_DATE_FORMAT);
-            LocalDateTime dayStart = LocalDateTime.parse(date + " 00:00:00", format);
-            LocalDateTime dayEnd = LocalDateTime.parse(date + " 23:59:59", format);
+            String refinedDate = date.substring(0, LAST_INDEX_OF_DATE_FORMAT);
+            LocalDateTime dayStart = LocalDateTime.parse(refinedDate + " 00:00:00", format);
+            LocalDateTime dayEnd = LocalDateTime.parse(refinedDate + " 23:59:59", format);
 
             Sort.Direction order = (part) ? Sort.Direction.DESC : Sort.Direction.ASC;
             List<RecordEntity> records = recordRepository.findAllByDateBetweenAndUserAndGoal(
                     dayStart, dayEnd,
-                    userRepository.findById(getRecordReq.getUserIdx()).orElse(null),
-                    goalRepository.findById(getRecordReq.getGoalIdx()).orElse(null),
+                    userRepository.findById(goalIdx).orElse(null),
+                    goalRepository.findById(goalIdx).orElse(null),
                     Sort.by(order, "date")
             );
 
@@ -109,7 +109,7 @@ public class RecordService {
                     goalRepository.findById(goalIdx).orElse(null), type);
             List<GetRecordRes> getRecordRes = new ArrayList<>();
             for (String date : dates)
-                getRecordRes.add(getDailyRecords(new GetRecordReq(userIdx, goalIdx, date), true));
+                getRecordRes.add(getDailyRecords(goalIdx, date, true));
             return getRecordRes;
         } catch (BaseException e) {
             throw new BaseException(DATABASE_ERROR);
