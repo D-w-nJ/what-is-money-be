@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "goal")
-@AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor @NoArgsConstructor
 @Builder @Getter @Setter
 public class GoalEntity {
     @Id // 테이블의 PK 와 해당 필드를 매핑한다.

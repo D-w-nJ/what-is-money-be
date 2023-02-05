@@ -135,7 +135,7 @@ public class GoalController {
 
     @ResponseBody
     @PostMapping("/uploadGoalImage/{goalIdx}/{userIdx}")
-    public BaseResponse uploadGoalImage(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx, @RequestBody ImageGoalReq imageGoalReq) {
+    public BaseResponse uploadGoalImage(@PathVariable("goalIdx") Long goalIdx, @PathVariable("userIdx") Long userIdx, ImageGoalReq imageGoalReq) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
             if (jwtServiceUserIdx != userIdx) {

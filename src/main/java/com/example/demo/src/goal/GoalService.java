@@ -50,12 +50,12 @@ public class GoalService {
 
             // CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
             UserEntity userEntity = userRepository.findById(userIdx).get();
-            String image = makeGoalReq.getImage();
+            // String image = makeGoalReq.getImage();
             int goal_amount = makeGoalReq.getGoal_amount();
             int init_amount = makeGoalReq.getInit_amount();
             String category_name = makeGoalReq.getCategory_name();
 
-            GoalEntity goalEntity = makeGoalReq.toEntity(image, goal_amount, init_amount, category_name, userEntity);
+            GoalEntity goalEntity = makeGoalReq.toEntity(goal_amount, init_amount, category_name, userEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
@@ -148,7 +148,6 @@ public class GoalService {
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-
             goalEntity.setImage(imageFileName); // image 설정
         } catch (Exception e){
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
