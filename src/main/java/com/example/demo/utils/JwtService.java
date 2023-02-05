@@ -6,6 +6,10 @@ import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.TokenDto;
 import io.jsonwebtoken.*;
 import jdk.internal.org.jline.utils.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ReactiveRedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +17,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -32,6 +38,9 @@ public class JwtService {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L;    // 7일
 
     private final String key = Secret.JWT_SECRET_KEY;
+
+    @Autowired //이 어노테이션 안해주면 redis에서 값을 못불러온다!!
+    RedisTemplate redisTemplate;
 
     /*
     JWT 생성
@@ -94,17 +103,32 @@ public class JwtService {
     @throws BaseException
      */
     public int getUserIdx() throws BaseException {
+
+
         //1. JWT 추출
         String accessToken = getJwt();
+
 
         if (accessToken == null || accessToken.length() == 0) {
             throw new BaseException(EMPTY_JWT);
         }
-        System.out.println("=============accessToken???====="+accessToken);
-
-        if(accessToken=="logout"){
-            throw new BaseException(EMPTY_ACCESSTOKEN);
+        System.out.println("++++++++++accessToken??+++++++++++++++++"+accessToken);
+        // (추가) Redis에 해당 accessToken logout 여부 확인
+        try{
+            System.out.println("=============과연???====="+redisTemplate.opsForValue().get(accessToken));
+            String isLogout = (String)redisTemplate.opsForValue().get(accessToken);
+            System.out.println("==========isLogout??====="+isLogout);
+            if(isLogout.equals("logout")) {//이미 로그아웃된 사용자(블랙리스트 등록완료)
+                System.out.println("여기인가용!!!!!?!?!?");
+                return 0; //이미 로그아웃된 사용자여서 종료시키기
+            }
+        }catch(Exception ignored){
+            //계속이어가세요~
+            System.out.println("계속이어가세요~~");
         }
+
+
+
 
 
         // 2. JWT parsing
