@@ -10,14 +10,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ModifyGoalReq {
-    private String image;
     private int goal_amount;
     private int init_amount;
 
     private String category_name;
 
-    public ModifyGoalReq(String image, int goal_amount, int init_amount, String category_name){
-        this.image = image;
+    public ModifyGoalReq(int goal_amount, int init_amount, String category_name){
         this.goal_amount = goal_amount;
         this.init_amount = init_amount;
         this.category_name = category_name;
