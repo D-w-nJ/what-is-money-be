@@ -35,8 +35,9 @@ public class GoalController {
             if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            goalService.createGoal(makeGoalReq, userIdx);
-            return new BaseResponse<>();
+            Long goalIdx = goalService.createGoal(makeGoalReq, userIdx);
+            MakeGoalRes makeGoalRes =  new MakeGoalRes(goalIdx);
+            return new BaseResponse<>(makeGoalRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
