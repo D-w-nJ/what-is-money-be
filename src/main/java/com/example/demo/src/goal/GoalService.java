@@ -48,7 +48,7 @@ public class GoalService {
     private String uploadFolder;
 
     @Transactional
-    public void createGoal(MakeGoalReq makeGoalReq, Long userIdx) throws BaseException {
+    public Long createGoal(MakeGoalReq makeGoalReq, Long userIdx) throws BaseException {
         try {
             // Optional<CategoryEntity> categoryEntity = categoryRepository.findById(category_id);
             // CategoryEntity categoryEntity = categoryRepository.findById(categoryIdx).get();
@@ -62,6 +62,7 @@ public class GoalService {
 
             GoalEntity goalEntity = makeGoalReq.toEntity(goal_amount, init_amount, category_name, userEntity);
             goalRepository.save(goalEntity);  // Goal 엔티티 저장
+            return goalEntity.getId();
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
