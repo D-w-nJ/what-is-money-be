@@ -24,7 +24,7 @@ public interface GoalRepository extends JpaRepository<GoalEntity, Long> {
     List<GetGoalMiddle> findGoalList(@Param("userIdx") Long userIdx);
 
     @Query("select new com.example.demo.src.goal.model.GetGoalMiddle(m.id, m.image, m.goal_amount, m.amount,m.init_amount, m.category_name, m.date) from GoalEntity m where m.user_id.id = :userIdx and m.id = :goalIdx")
-    GetGoalRes findGoal(@Param("userIdx") Long userIdx, @Param("goalIdx") Long goalIdx);
+    GetGoalMiddle findGoal(@Param("userIdx") Long userIdx, @Param("goalIdx") Long goalIdx);
 
     //  @Query("select m from GoalEntity m left join f")
 

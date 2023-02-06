@@ -90,9 +90,6 @@ public class GoalService {
                     String category_name  = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
-                    System.out.println("==========================================");
-                    System.out.println("==========================================");
-
                     GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
                     result.add(getGoalRes);
                 }
@@ -114,6 +111,77 @@ public class GoalService {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
+
+    @Transactional
+    public void deleteGoal(Long goalIdx) throws BaseException {
+        try {
+            GoalEntity goalEntity = goalRepository.findById(goalIdx).get();
+            recordRepository.deleteRecordEntitiesByGoalEntity(goalEntity);
+            goalRepository.deleteById(goalIdx);
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    // 오름차순 정렬
+    public List<GetGoalRes> getGoalResListAsc(Long userIdx) throws BaseException {
+        try {
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
+            return getGoalResList;
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    public List<GetGoalRes> getGoalResListDesc(Long userIdx) throws BaseException {
+        try {
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByDesc(userIdx);
+            return getGoalResList;
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
+    public GetGoalRes getGoalRes(Long userIdx, Long goalIdx) throws BaseException {
+        try {
+            GetGoalRes getGoalRes;
+            // UserEntity userEntity = userRepository.findById(userIdx).get();
+            GetGoalMiddle getGoalMiddle = goalRepository.findGoal(userIdx, goalIdx);
+            String imageName = getGoalMiddle.getImage();
+            if(imageName == null) {
+                Long id = getGoalMiddle.getId();
+                int goal_amount = getGoalMiddle.getGoal_amount();
+                int amount = getGoalMiddle.getAmount();
+                int init_amount = getGoalMiddle.getInit_amount();
+                float progress = amount / goal_amount;  // 진행률 계산
+                String category_name = getGoalMiddle.getCategory_name();
+                LocalDateTime date = getGoalMiddle.getDate();
+
+                getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
+            }
+            else {
+                InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
+                byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+                imageStream.close();
+
+                Long id = getGoalMiddle.getId();
+                int goal_amount = getGoalMiddle.getGoal_amount();
+                int amount = getGoalMiddle.getAmount();
+                int init_amount = getGoalMiddle.getInit_amount();
+                float progress = amount / goal_amount;  // 진행률 계산
+                String category_name = getGoalMiddle.getCategory_name();
+                LocalDateTime date = getGoalMiddle.getDate();
+
+                getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
+            }
+            return getGoalRes;
+        } catch (Exception exception) {
+            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
+        }
+    }
+
 
     /*
     public GetUsersProfileRes getUsers(Long userIdx)throws BaseException{
@@ -153,48 +221,6 @@ public class GoalService {
     }
      */
 
-
-    @Transactional
-    public void deleteGoal(Long goalIdx) throws BaseException {
-        try {
-            GoalEntity goalEntity = goalRepository.findById(goalIdx).get();
-            recordRepository.deleteRecordEntitiesByGoalEntity(goalEntity);
-            goalRepository.deleteById(goalIdx);
-        } catch (Exception exception) {
-            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
-        }
-    }
-
-    // 오름차순 정렬
-    public List<GetGoalRes> getGoalResListAsc(Long userIdx) throws BaseException {
-        try {
-            // UserEntity userEntity = userRepository.findById(userIdx).get();
-            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
-            return getGoalResList;
-        } catch (Exception exception) {
-            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
-        }
-    }
-
-    public List<GetGoalRes> getGoalResListDesc(Long userIdx) throws BaseException {
-        try {
-            // UserEntity userEntity = userRepository.findById(userIdx).get();
-            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByDesc(userIdx);
-            return getGoalResList;
-        } catch (Exception exception) {
-            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
-        }
-    }
-
-    public GetGoalRes getGoalRes(Long userIdx, Long goalIdx) throws BaseException {
-        try {
-            // UserEntity userEntity = userRepository.findById(userIdx).get();
-            GetGoalRes getGoalRes = goalRepository.findGoal(userIdx, goalIdx);
-            return getGoalRes;
-        } catch (Exception exception) {
-            throw new BaseException(BaseResponseStatus.SERVER_ERROR);
-        }
-    }
 
     @Transactional
     public void modifyGoal(Long goalIdx, Long userIdx, ModifyGoalReq modifyGoalReq) throws BaseException {
