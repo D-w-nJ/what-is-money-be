@@ -126,19 +126,88 @@ public class GoalService {
     // 오름차순 정렬
     public List<GetGoalRes> getGoalResListAsc(Long userIdx) throws BaseException {
         try {
+            List<GetGoalRes> result = new ArrayList<GetGoalRes>(); // 결과물 리스트
+
             // UserEntity userEntity = userRepository.findById(userIdx).get();
-            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
-            return getGoalResList;
+            List<GetGoalMiddle> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
+            for (GetGoalMiddle getGoalMiddle : getGoalResList){
+                String imageName = getGoalMiddle.getImage();
+                if(imageName != null){
+                    InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
+                    byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+                    imageStream.close();
+                    // 여기까지 이미지 추출
+
+                    Long id = getGoalMiddle.getId();
+                    int goal_amount = getGoalMiddle.getGoal_amount();
+                    int amount = getGoalMiddle.getAmount();
+                    int init_amount = getGoalMiddle.getInit_amount();
+                    float progress = amount / goal_amount;  // 진행률 계산
+                    String category_name  = getGoalMiddle.getCategory_name();
+                    LocalDateTime date = getGoalMiddle.getDate();
+
+                    GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
+                    result.add(getGoalRes);
+                }
+                else {  // image 값이 null 인 경우
+                    Long id = getGoalMiddle.getId();
+                    int goal_amount = getGoalMiddle.getGoal_amount();
+                    int amount = getGoalMiddle.getAmount();
+                    int init_amount = getGoalMiddle.getInit_amount();
+                    float progress = amount / goal_amount;  // 진행률 계산
+                    String category_name  = getGoalMiddle.getCategory_name();
+                    LocalDateTime date = getGoalMiddle.getDate();
+
+                    GetGoalRes getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
+                    result.add(getGoalRes);
+                }
+            }
+            return result;
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
 
+
     public List<GetGoalRes> getGoalResListDesc(Long userIdx) throws BaseException {
         try {
+            List<GetGoalRes> result = new ArrayList<GetGoalRes>(); // 결과물 리스트
+
             // UserEntity userEntity = userRepository.findById(userIdx).get();
-            List<GetGoalRes> getGoalResList = goalRepository.findGoalListByDesc(userIdx);
-            return getGoalResList;
+            List<GetGoalMiddle> getGoalResList = goalRepository.findGoalListByDesc(userIdx);
+            for (GetGoalMiddle getGoalMiddle : getGoalResList){
+                String imageName = getGoalMiddle.getImage();
+                if(imageName != null){
+                    InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
+                    byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+                    imageStream.close();
+                    // 여기까지 이미지 추출
+
+                    Long id = getGoalMiddle.getId();
+                    int goal_amount = getGoalMiddle.getGoal_amount();
+                    int amount = getGoalMiddle.getAmount();
+                    int init_amount = getGoalMiddle.getInit_amount();
+                    float progress = amount / goal_amount;  // 진행률 계산
+                    String category_name  = getGoalMiddle.getCategory_name();
+                    LocalDateTime date = getGoalMiddle.getDate();
+
+                    GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
+                    result.add(getGoalRes);
+                }
+                else {  // image 값이 null 인 경우
+                    Long id = getGoalMiddle.getId();
+                    int goal_amount = getGoalMiddle.getGoal_amount();
+                    int amount = getGoalMiddle.getAmount();
+                    int init_amount = getGoalMiddle.getInit_amount();
+                    float progress = amount / goal_amount;  // 진행률 계산
+                    String category_name  = getGoalMiddle.getCategory_name();
+                    LocalDateTime date = getGoalMiddle.getDate();
+
+                    GetGoalRes getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
+                    result.add(getGoalRes);
+                }
+            }
+            return result;
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
