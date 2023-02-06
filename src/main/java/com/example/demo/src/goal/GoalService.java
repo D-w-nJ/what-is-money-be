@@ -11,6 +11,7 @@ import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.model.UserEntity;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,13 +70,89 @@ public class GoalService {
 
     public List<GetGoalRes> getGoalResList(Long userIdx) throws BaseException {
         try {
+            List<GetGoalRes> result = new ArrayList<GetGoalRes>(); // 결과물 리스트
+
             // UserEntity userEntity = userRepository.findById(userIdx).get();
-            List<GetGoalRes> getGoalResList = goalRepository.findGoalList(userIdx);
-            return getGoalResList;
+            List<GetGoalMiddle> getGoalResList = goalRepository.findGoalList(userIdx);
+            for (GetGoalMiddle getGoalMiddle : getGoalResList){
+                String imageName = getGoalMiddle.getImage();
+                if(imageName != null){
+                    InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
+                    byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+                    imageStream.close();
+                    // 여기까지 이미지 추출
+
+                    Long id = getGoalMiddle.getId();
+                    int goal_amount = getGoalMiddle.getGoal_amount();
+                    int amount = getGoalMiddle.getAmount();
+                    int init_amount = getGoalMiddle.getInit_amount();
+                    float progress = amount / goal_amount;  // 진행률 계산
+                    String category_name  = getGoalMiddle.getCategory_name();
+                    LocalDateTime date = getGoalMiddle.getDate();
+
+                    System.out.println("==========================================");
+                    System.out.println("==========================================");
+
+                    GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
+                    result.add(getGoalRes);
+                }
+                else {  // image 값이 null 인 경우
+                    Long id = getGoalMiddle.getId();
+                    int goal_amount = getGoalMiddle.getGoal_amount();
+                    int amount = getGoalMiddle.getAmount();
+                    int init_amount = getGoalMiddle.getInit_amount();
+                    float progress = amount / goal_amount;  // 진행률 계산
+                    String category_name  = getGoalMiddle.getCategory_name();
+                    LocalDateTime date = getGoalMiddle.getDate();
+
+                    GetGoalRes getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
+                    result.add(getGoalRes);
+                }
+            }
+            return result;
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
+
+    /*
+    public GetUsersProfileRes getUsers(Long userIdx)throws BaseException{
+        GetUsersProfileRes getUsersProfileRes;
+        try{
+            UserEntity user = userRepository.findById(userIdx).get();
+            System.out.println("------------userEntity-----------"+user);
+            String name = user.getName();
+            String userId = user.getUserId();
+            String imageName = user.getImage();
+            System.out.println("image??"+imageName);
+
+            if(imageName==null){
+                getUsersProfileRes = new GetUsersProfileRes(name, userId, null);
+            }else{
+                //이미지를 불러오기
+                //해당 경로의 image를 FileInputstream의 객체를 만들어서
+                //byte[] 형태의 값으로 incoding 후 보내게 된다
+                System.out.println("여기서???"+uploadFolder);
+                InputStream imageStream = new FileInputStream(uploadFolder+"/"+imageName);
+                System.out.println("=============imageStream????====="+imageStream);
+                byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+                imageStream.close();
+
+                System.out.println("================imageByteArray???======"+imageByteArray);
+
+                getUsersProfileRes = new GetUsersProfileRes(name, userId, imageByteArray);
+
+            }
+
+            return getUsersProfileRes;
+
+
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+     */
+
 
     @Transactional
     public void deleteGoal(Long goalIdx) throws BaseException {

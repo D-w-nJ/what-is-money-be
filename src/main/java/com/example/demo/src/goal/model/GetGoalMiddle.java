@@ -1,8 +1,5 @@
 package com.example.demo.src.goal.model;
 
-
-import com.example.demo.src.category.model.CategoryEntity;
-import com.example.demo.src.user.model.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,20 +9,18 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GetGoalRes {
+@AllArgsConstructor
+public class GetGoalMiddle {
     private Long id;
-    private byte[] image;
+    private String image;
     private int goal_amount;
     private int amount;
     private int init_amount;
     private float progress;
     private String category_name;
     private LocalDateTime date;
-    // private UserEntity userEntity;
 
-    // private Long userIdx;
-
-    public GetGoalRes(Long id, byte[] image, int goal_amount, int amount, int init_amount, float progress, String category_name, LocalDateTime date) {
+    public GetGoalMiddle(Long id, String image, int goal_amount, int amount, int init_amount, String category_name, LocalDateTime date) {
         this.id = id;
         this.image = image;
         this.goal_amount = goal_amount;
