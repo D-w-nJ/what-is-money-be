@@ -2,7 +2,6 @@ package com.example.demo.src.chart;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
-import com.example.demo.src.chart.model.GetChartReq;
 import com.example.demo.src.chart.model.GetChartRes;
 
 import lombok.RequiredArgsConstructor;
@@ -24,9 +23,9 @@ public class ChartService {
     private final ChartRepository chartRepository;
 
     @Transactional
-    public List<GetChartRes> getChartList(GetChartReq getChartReq) throws BaseException {
+    public List<GetChartRes> getChartList(Long userIdx) throws BaseException {
         try {
-            List<GetChartRes> getChartResList = chartRepository.getChartResList(getChartReq.getUserIdx());
+            List<GetChartRes> getChartResList = chartRepository.getChartResList(userIdx);
             return getChartResList;
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
@@ -34,13 +33,13 @@ public class ChartService {
     }
 
     @Transactional
-    public List<GetChartRes> getChartListByLast(GetChartReq getChartReq) throws BaseException {
+    public List<GetChartRes> getChartListByLast(Long userIdx) throws BaseException {
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM");
             Calendar cal = Calendar.getInstance();
             cal.add(cal.MONTH, -1);
             String lastM = df.format(cal.getTime());
-            List<GetChartRes> getChartResList = chartRepository.getChartListByLast(getChartReq.getUserIdx(), lastM);
+            List<GetChartRes> getChartResList = chartRepository.getChartListByLast(userIdx, lastM);
             return getChartResList;
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
