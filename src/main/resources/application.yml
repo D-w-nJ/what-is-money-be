@@ -17,7 +17,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     redis:
-      host: localhost #mnmn-redis-2.0ze73z.ng.0001.apn2.cache.amazonaws.com #같은 vpc내부에서 생성된 elastiCache(Redis)의 엔드포인트
+      host: mnmn-redis-2.0ze73z.ng.0001.apn2.cache.amazonaws.com #같은 vpc내부에서 생성된 elastiCache(Redis)의 엔드포인트
       port: 6379
 
   jpa:
