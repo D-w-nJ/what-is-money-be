@@ -3,7 +3,6 @@ package com.example.demo.src.chart;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.config.BaseResponseStatus;
-import com.example.demo.src.chart.model.GetChartReq;
 import com.example.demo.src.chart.model.GetChartRes;
 import com.example.demo.utils.JwtService;
 
@@ -26,28 +25,28 @@ public class ChartController {
         this.chartService = chartService;
     }
 
-    @GetMapping("")
-    public BaseResponse<List<GetChartRes>> getChartList(@RequestBody GetChartReq getChartReq) {
+    @GetMapping("{userIdx}")
+    public BaseResponse<List<GetChartRes>> getChartList(@PathVariable("userIdx") Long userIdx) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
-            if (jwtServiceUserIdx != getChartReq.getUserIdx()) {
+            if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            List<GetChartRes> getChartResList = chartService.getChartList(getChartReq);
+            List<GetChartRes> getChartResList = chartService.getChartList(userIdx);
             return new BaseResponse<>(getChartResList);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
     }
 
-    @GetMapping("last")
-    public BaseResponse<List<GetChartRes>> getChartListByLast(@RequestBody GetChartReq getChartReq) {
+    @GetMapping("last/{userIdx}")
+    public BaseResponse<List<GetChartRes>> getChartListByLast(@PathVariable("userIdx") Long userIdx) {
         try {
             int jwtServiceUserIdx = jwtService.getUserIdx();
-            if (jwtServiceUserIdx != getChartReq.getUserIdx()) {
+            if (jwtServiceUserIdx != userIdx) {
                 return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
             }
-            List<GetChartRes> getChartResList = chartService.getChartListByLast(getChartReq);
+            List<GetChartRes> getChartResList = chartService.getChartListByLast(userIdx);
             return new BaseResponse<>(getChartResList);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
