@@ -129,8 +129,8 @@ public class UserService {
                     String refreshToken = tokenDto.getRefreshToken();
                     user.setRT(refreshToken);
 //                     4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
-//                    redisTemplate.opsForValue()
-//                            .set("RT:" + user.getName(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+                    redisTemplate.opsForValue()
+                            .set("RT:" + user.getName(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
                     return user.toPostLoginRes(tokenDto);
                 }
@@ -143,8 +143,8 @@ public class UserService {
                 String refreshToken = tokenDto.getRefreshToken();
                 user.setRT(refreshToken);
                 // 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
-//                redisTemplate.opsForValue()
-//                        .set("RT:" + user.getName(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+                redisTemplate.opsForValue()
+                        .set("RT:" + user.getName(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
                 return user.toPostLoginRes(tokenDto);
             }else {
@@ -196,12 +196,12 @@ public class UserService {
             }
 
             //redis에서 확인
-//            if(ObjectUtils.isEmpty(refreshToken)) {
-//                throw new BaseException(EMPTY_ACCESSTOKEN);
-//            }
-//            if(!refreshToken.equals(reissueReq.getRefreshToken())) {
-//                throw new BaseException(INVALID_RT);
-//            }
+            if(ObjectUtils.isEmpty(refreshToken)) {
+                throw new BaseException(EMPTY_ACCESSTOKEN);
+            }
+            if(!refreshToken.equals(reissueReq.getRefreshToken())) {
+                throw new BaseException(INVALID_RT);
+            }
 
             // 5. 새로운 토큰 생성(access토큰과 refresh토큰 둘 다 생성)
             TokenDto tokenDto = jwtService.createJwt(id2);
@@ -215,8 +215,8 @@ public class UserService {
             userEntity.updateRT(newRefreshToken);
 
             //redis에 RefreshToken 업데이트
-//            redisTemplate.opsForValue()
-//                    .set("RT:" + userEntity.getName(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+            redisTemplate.opsForValue()
+                    .set("RT:" + userEntity.getName(), tokenDto.getRefreshToken(), tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
             //7. 토큰 발급(access토큰과 access토큰 만료시간 반환)
             reissueRes = new ReissueRes(newAccessToken, accessTokenExpiration);
@@ -251,10 +251,10 @@ public class UserService {
                 userEntity.setRT(null);
             }
             // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-//            if (redisTemplate.opsForValue().get("RT:" + userEntity.getName()) != null) {
-//                // Refresh Token 삭제
-//                redisTemplate.delete("RT:" +userEntity.getName());
-//            }
+            if (redisTemplate.opsForValue().get("RT:" + userEntity.getName()) != null) {
+                // Refresh Token 삭제
+                redisTemplate.delete("RT:" +userEntity.getName());
+            }
 
             // 4. 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
             Long expiration = jwtService.getExpiration(postLogoutReq.getAccessToken());
