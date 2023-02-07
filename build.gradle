@@ -68,6 +68,7 @@ dependencies {
 
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation("redis.clients:jedis:3.3.0")
 
 
     //email검증, email전송
