@@ -251,10 +251,10 @@ public class UserService {
                 userEntity.setRT(null);
             }
             // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-//            if (redisTemplate.opsForValue().get("RT:" + userEntity.getName()) != null) {
-//                // Refresh Token 삭제
-//                redisTemplate.delete("RT:" +userEntity.getName());
-//            }
+            if (redisTemplate.opsForValue().get("RT:" + userEntity.getName()) != null) {
+                // Refresh Token 삭제
+                redisTemplate.delete("RT:" +userEntity.getName());
+            }
 
             // 4. 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
             Long expiration = jwtService.getExpiration(postLogoutReq.getAccessToken());
