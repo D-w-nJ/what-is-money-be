@@ -8,7 +8,7 @@ spring:
     name: demo
 
   redis:
-    host: what-is-money-be.mtfmsq.ng.0001.apn2.cache.amazonaws.com
+    host: mnmn-redis.0ze73z.clustercfg.apn2.cache.amazonaws.com #같은 vpc내부에서 생성된 elastiCache(Redis)의 엔드포인트
     port: 6379
 
   datasource:
