@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
@@ -18,10 +19,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableRedisRepositories
 public class RedisRepositoryConfig {
-    @Value("${spring.redis.host}")
+    @Value("${spring.datasource.redis.host}")
     private String host;
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.datasource.redis.port}")
     private int port;
 
     // lettuce
