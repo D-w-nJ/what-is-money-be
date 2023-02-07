@@ -7,10 +7,6 @@ spring:
   application:
     name: demo
 
-  redis:
-    host: mnmn-redis.0ze73z.clustercfg.apn2.cache.amazonaws.com #같은 vpc내부에서 생성된 elastiCache(Redis)의 엔드포인트
-    port: 6379
-
   datasource:
     platform: mysql
 #    url: jdbc:mysql://db-mnmn.chvkp5qmhxhv.ap-northeast-2.rds.amazonaws.com:3306/what-is-money
@@ -19,6 +15,10 @@ spring:
     username: mnmn # 만약 따로 설정하지 않으셨다면 기본값은 admin 입니다
     password: mnmn123qwe # 비밀번호를 입력해주세요!
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+    redis:
+      host: mnmn-redis.0ze73z.clustercfg.apn2.cache.amazonaws.com #같은 vpc내부에서 생성된 elastiCache(Redis)의 엔드포인트
+      port: 6379
 
   jpa:
     hibernate:
