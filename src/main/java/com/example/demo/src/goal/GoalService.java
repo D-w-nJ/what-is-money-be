@@ -75,9 +75,9 @@ public class GoalService {
 
             // UserEntity userEntity = userRepository.findById(userIdx).get();
             List<GetGoalMiddle> getGoalResList = goalRepository.findGoalList(userIdx);
-            for (GetGoalMiddle getGoalMiddle : getGoalResList){
+            for (GetGoalMiddle getGoalMiddle : getGoalResList) {
                 String imageName = getGoalMiddle.getImage();
-                if(imageName != null){
+                if (imageName != null) {
                     InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
                     byte[] imageByteArray = IOUtils.toByteArray(imageStream);
                     imageStream.close();
@@ -88,19 +88,18 @@ public class GoalService {
                     int amount = getGoalMiddle.getAmount();
                     int init_amount = getGoalMiddle.getInit_amount();
                     float progress = amount / goal_amount;  // 진행률 계산
-                    String category_name  = getGoalMiddle.getCategory_name();
+                    String category_name = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
                     GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
                     result.add(getGoalRes);
-                }
-                else {  // image 값이 null 인 경우
+                } else {  // image 값이 null 인 경우
                     Long id = getGoalMiddle.getId();
                     int goal_amount = getGoalMiddle.getGoal_amount();
                     int amount = getGoalMiddle.getAmount();
                     int init_amount = getGoalMiddle.getInit_amount();
                     float progress = amount / goal_amount;  // 진행률 계산
-                    String category_name  = getGoalMiddle.getCategory_name();
+                    String category_name = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
                     GetGoalRes getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
@@ -131,9 +130,9 @@ public class GoalService {
 
             // UserEntity userEntity = userRepository.findById(userIdx).get();
             List<GetGoalMiddle> getGoalResList = goalRepository.findGoalListByAsc(userIdx);
-            for (GetGoalMiddle getGoalMiddle : getGoalResList){
+            for (GetGoalMiddle getGoalMiddle : getGoalResList) {
                 String imageName = getGoalMiddle.getImage();
-                if(imageName != null){
+                if (imageName != null) {
                     InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
                     byte[] imageByteArray = IOUtils.toByteArray(imageStream);
                     imageStream.close();
@@ -144,19 +143,18 @@ public class GoalService {
                     int amount = getGoalMiddle.getAmount();
                     int init_amount = getGoalMiddle.getInit_amount();
                     float progress = amount / goal_amount;  // 진행률 계산
-                    String category_name  = getGoalMiddle.getCategory_name();
+                    String category_name = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
                     GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
                     result.add(getGoalRes);
-                }
-                else {  // image 값이 null 인 경우
+                } else {  // image 값이 null 인 경우
                     Long id = getGoalMiddle.getId();
                     int goal_amount = getGoalMiddle.getGoal_amount();
                     int amount = getGoalMiddle.getAmount();
                     int init_amount = getGoalMiddle.getInit_amount();
                     float progress = amount / goal_amount;  // 진행률 계산
-                    String category_name  = getGoalMiddle.getCategory_name();
+                    String category_name = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
                     GetGoalRes getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
@@ -176,9 +174,9 @@ public class GoalService {
 
             // UserEntity userEntity = userRepository.findById(userIdx).get();
             List<GetGoalMiddle> getGoalResList = goalRepository.findGoalListByDesc(userIdx);
-            for (GetGoalMiddle getGoalMiddle : getGoalResList){
+            for (GetGoalMiddle getGoalMiddle : getGoalResList) {
                 String imageName = getGoalMiddle.getImage();
-                if(imageName != null){
+                if (imageName != null) {
                     InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
                     byte[] imageByteArray = IOUtils.toByteArray(imageStream);
                     imageStream.close();
@@ -189,19 +187,18 @@ public class GoalService {
                     int amount = getGoalMiddle.getAmount();
                     int init_amount = getGoalMiddle.getInit_amount();
                     float progress = amount / goal_amount;  // 진행률 계산
-                    String category_name  = getGoalMiddle.getCategory_name();
+                    String category_name = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
                     GetGoalRes getGoalRes = new GetGoalRes(id, imageByteArray, goal_amount, amount, init_amount, progress, category_name, date);
                     result.add(getGoalRes);
-                }
-                else {  // image 값이 null 인 경우
+                } else {  // image 값이 null 인 경우
                     Long id = getGoalMiddle.getId();
                     int goal_amount = getGoalMiddle.getGoal_amount();
                     int amount = getGoalMiddle.getAmount();
                     int init_amount = getGoalMiddle.getInit_amount();
                     float progress = amount / goal_amount;  // 진행률 계산
-                    String category_name  = getGoalMiddle.getCategory_name();
+                    String category_name = getGoalMiddle.getCategory_name();
                     LocalDateTime date = getGoalMiddle.getDate();
 
                     GetGoalRes getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
@@ -220,7 +217,7 @@ public class GoalService {
             // UserEntity userEntity = userRepository.findById(userIdx).get();
             GetGoalMiddle getGoalMiddle = goalRepository.findGoal(userIdx, goalIdx);
             String imageName = getGoalMiddle.getImage();
-            if(imageName == null) {
+            if (imageName == null) {
                 Long id = getGoalMiddle.getId();
                 int goal_amount = getGoalMiddle.getGoal_amount();
                 int amount = getGoalMiddle.getAmount();
@@ -230,8 +227,7 @@ public class GoalService {
                 LocalDateTime date = getGoalMiddle.getDate();
 
                 getGoalRes = new GetGoalRes(id, null, goal_amount, amount, init_amount, progress, category_name, date);
-            }
-            else {
+            } else {
                 InputStream imageStream = new FileInputStream(uploadFolder + "/" + imageName);
                 byte[] imageByteArray = IOUtils.toByteArray(imageStream);
                 imageStream.close();
@@ -301,12 +297,13 @@ public class GoalService {
             // String goalImage = modifyGoalReq.getImage();
             String category_name = modifyGoalReq.getCategory_name();
             GoalEntity goal = goalRepository.findGoalEntityById(goalIdx);
-            int origialInitAmount = goal.getInit_amount();
+            int originalInitAmount = goal.getInit_amount();
+            int originalAmount = goal.getAmount();
+            int newAmount = originalAmount - originalInitAmount + initAmount;
 
             // CategoryEntity categoryEntity = categoryRepository.findByCategoryIdx(categoryIdx);
             UserEntity userEntity = userRepository.findById(userIdx).get();
-            goalRepository.updateGoal(goalAmount, initAmount, category_name, userEntity, goalIdx);
-            goalRepository.updateAmount(goal.getAmount() - origialInitAmount + initAmount, goalIdx);
+            goalRepository.updateGoal(goalAmount,newAmount, initAmount, category_name, userEntity, goalIdx);
 
         } catch (Exception exception) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
@@ -314,19 +311,19 @@ public class GoalService {
     }
 
     @Transactional
-    public void uploadGoalImage(Long goalIdx, Long userIdx, ImageGoalReq imageGoalReq) throws BaseException{
-        try{
+    public void uploadGoalImage(Long goalIdx, Long userIdx, ImageGoalReq imageGoalReq) throws BaseException {
+        try {
             GoalEntity goalEntity = goalRepository.findById(goalIdx).get();
             UUID uuid = UUID.randomUUID(); // 이미지의 고유성 보장
-            String imageFileName = uuid+"_"+imageGoalReq.getImage().getOriginalFilename();
+            String imageFileName = uuid + "_" + imageGoalReq.getImage().getOriginalFilename();
             Path imageFilePath = Paths.get(uploadFolder + "/" + imageFileName);
-            try{
+            try {
                 Files.write(imageFilePath, imageGoalReq.getImage().getBytes());
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
             goalEntity.setImage(imageFileName); // image 설정
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.SERVER_ERROR);
         }
     }
