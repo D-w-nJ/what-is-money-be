@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.config.secret.Secret;
+import com.example.demo.src.goal.GoalRepository;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -20,6 +21,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.transaction.Transactional;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -41,10 +45,9 @@ import java.util.concurrent.TimeUnit;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
-
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     //메일전송
     private final JavaMailSender javaMailSender;
@@ -336,6 +339,7 @@ public class UserService {
         try{
             userRepository.deleteById(userIdx);
             System.out.println("=======실행되었나?=======");
+
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
