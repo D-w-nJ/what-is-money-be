@@ -42,8 +42,8 @@ public class UserEntity {
     @Column(name = "refresh_token")
     private String RT;
 
-
-    @OneToMany(mappedBy = "user_id")
+    //회원탈퇴할 때 외래키데이터 삭제
+    @OneToMany(mappedBy = "user_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<GoalEntity> goalEntityList = new ArrayList<>();
 
     /*

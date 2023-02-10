@@ -4,6 +4,7 @@ import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GetGoalRes;
 import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.user.model.UserEntity;
+import org.hibernate.annotations.SQLDelete;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +43,5 @@ public interface GoalRepository extends JpaRepository<GoalEntity, Long> {
     @Modifying
     @Query("update GoalEntity m set m.amount = :amount where m.id=:goalIdx")
     void updateAmount(@Param("amount") int amount, @Param("goalIdx") Long goalIdx);
+
 }
