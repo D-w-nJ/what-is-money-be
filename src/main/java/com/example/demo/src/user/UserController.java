@@ -1,6 +1,8 @@
 package com.example.demo.src.user;
 
 import com.example.demo.config.BaseResponseStatus;
+import com.example.demo.src.question.model.PostQuestionReq;
+import com.example.demo.src.question.model.PostQuestionRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -441,61 +443,65 @@ public class UserController {
         }
     }
 
-    /**
-     * 비밀번호 재설정 API
-     * [PATCH] /users/resetPassword
-     * */
-    @ResponseBody
-    @PatchMapping("/resetPassword")
-    public BaseResponse<String> resetPassword(@Valid @RequestBody ResetPasswordReq resetPasswordReq){
-        try {
-            //아이디, 비번 not Empty
-            if(resetPasswordReq.getUserId()==null || resetPasswordReq.getUserId()==""){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-            if(resetPasswordReq.getNewPassword()==null || resetPasswordReq.getNewPassword()==""){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-            if(resetPasswordReq.getConfirmNewPassword()==null || resetPasswordReq.getConfirmNewPassword()==""){
-                return new BaseResponse<>(REQUEST_ERROR);
-            }
-
-            //비밀번호 중복확인
-            if(!resetPasswordReq.getNewPassword().equals(resetPasswordReq.getConfirmNewPassword())){
-                return new BaseResponse<>(INVALID_USER_PASSWORD);
-            }
-            //유저비밀번호 변경
-            userService.resetPassword(resetPasswordReq);
-
-            String result = "비밀번호를 재설정하였습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
+//    /**
+//     * 비밀번호 재설정 API
+//     * [PATCH] /users/resetPassword
+//     * */
+//    @ResponseBody
+//    @PatchMapping("/resetPassword")
+//    public BaseResponse<String> resetPassword(@Valid @RequestBody ResetPasswordReq resetPasswordReq){
+//        try {
+//            //아이디, 비번 not Empty
+//            if(resetPasswordReq.getUserId()==null || resetPasswordReq.getUserId()==""){
+//                return new BaseResponse<>(REQUEST_ERROR);
+//            }
+//            if(resetPasswordReq.getNewPassword()==null || resetPasswordReq.getNewPassword()==""){
+//                return new BaseResponse<>(REQUEST_ERROR);
+//            }
+//            if(resetPasswordReq.getConfirmNewPassword()==null || resetPasswordReq.getConfirmNewPassword()==""){
+//                return new BaseResponse<>(REQUEST_ERROR);
+//            }
+//
+//            //비밀번호 중복확인
+//            if(!resetPasswordReq.getNewPassword().equals(resetPasswordReq.getConfirmNewPassword())){
+//                return new BaseResponse<>(INVALID_USER_PASSWORD);
+//            }
+//            //유저비밀번호 변경
+//            userService.resetPassword(resetPasswordReq);
+//
+//            String result = "비밀번호를 재설정하였습니다.";
+//            return new BaseResponse<>(result);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
+//    }
 
     /**
      * 문의사항 API
      * [POST] /users/question
      */
-//    @ResponseBody
-//    @PostMapping("/question")
-//    public BaseResponse<String> createQuestion(@RequestBody PostQuestionReq postQuestionReq) {
-//        if (postQuestionReq.getEmail() == null) {
-//            return new BaseResponse(POST_USERS_EMPTY_EMAIL);
-//        }
-//        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
-//        if (!isRegexEmail(postQuestionReq.getEmail())) {
-//            return new BaseResponse(POST_USERS_INVALID_EMAIL);
-//        }
-//        try {
-//            //PostUserRes postUserRes = userService.createUser(postUserReq);
-//            userService.createQuestion(postQuestionReq);
-//
-//            String result = "문의사항이 정상적으로 접수되었습니다.";
-//            return new BaseResponse<>(result);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    @ResponseBody
+    @PostMapping("/question")
+    public BaseResponse<PostQuestionRes> createQuestion(@RequestBody PostQuestionReq postQuestionReq) {
+        try {
+            //accessToken검증
+            int jwtServiceUserIdx = jwtService.getUserIdx();
+            if (jwtServiceUserIdx != postQuestionReq.getUserIdx()) {
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            }
+
+            if (postQuestionReq.getEmail() == null) {
+                return new BaseResponse(POST_USERS_EMPTY_EMAIL);
+            }
+            //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
+            if (!isRegexEmail(postQuestionReq.getEmail())) {
+                return new BaseResponse(POST_USERS_INVALID_EMAIL);
+            }
+
+            PostQuestionRes postQuestionRes = userService.createQuestion(postQuestionReq);
+            return new BaseResponse<>(postQuestionRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 }
