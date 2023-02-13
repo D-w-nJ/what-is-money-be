@@ -4,6 +4,10 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.goal.GoalRepository;
+import com.example.demo.src.question.QuestionRepository;
+import com.example.demo.src.question.model.PostQuestionReq;
+import com.example.demo.src.question.model.PostQuestionRes;
+import com.example.demo.src.question.model.QuestionEntity;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
 import com.example.demo.utils.JwtService;
@@ -45,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
 
     private final JwtService jwtService;
     private final RedisTemplate redisTemplate;
@@ -537,42 +542,54 @@ public class UserService {
 
 
 
-    //비밀번호재설정
-    public void resetPassword(ResetPasswordReq resetPasswordReq)throws BaseException{
-        try{
-            //해당 아이디를 가진 userEntity찾기
-            UserEntity userEntity = userRepository.findByUserId(resetPasswordReq.getUserId());
-
-            //비밀번호 재설정
-            String newPassword;
-            try{
-                try{
-                    // 암호화: patchPasswordReq에서 제공받은 비밀번호를 보안을 위해 암호화시켜 DB에 저장합니다.
-                    newPassword = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(resetPasswordReq.getNewPassword());
-                } catch (Exception ignored){
-                    throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-                }
-                userEntity.updatePassword(newPassword);
-
-            } catch (Exception exception){
-                throw new BaseException(BaseResponseStatus.MODIFY_FAIL_PASSWORD);
-            }
-        }catch (Exception exception){
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-
-    //문의사항
-//    public void createQuestion(PostQuestionReq postQuestionReq) throws BaseException{
+//    //비밀번호재설정
+//    public void resetPassword(ResetPasswordReq resetPasswordReq)throws BaseException{
 //        try{
-//            //UserEntity userEntity = userRepository.findById(postUserImageReq.getUserIdx()).get();
-//            //String image = postUserImageReq.getImage();
+//            //해당 아이디를 가진 userEntity찾기
+//            UserEntity userEntity = userRepository.findByUserId(resetPasswordReq.getUserId());
 //
-//            //userEntity.save(image);
+//            //비밀번호 재설정
+//            String newPassword;
+//            try{
+//                try{
+//                    // 암호화: patchPasswordReq에서 제공받은 비밀번호를 보안을 위해 암호화시켜 DB에 저장합니다.
+//                    newPassword = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(resetPasswordReq.getNewPassword());
+//                } catch (Exception ignored){
+//                    throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+//                }
+//                userEntity.updatePassword(newPassword);
 //
+//            } catch (Exception exception){
+//                throw new BaseException(BaseResponseStatus.MODIFY_FAIL_PASSWORD);
+//            }
 //        }catch (Exception exception){
 //            throw new BaseException(DATABASE_ERROR);
 //        }
 //    }
+
+
+//    문의사항
+    public PostQuestionRes createQuestion(PostQuestionReq postQuestionReq) throws BaseException{
+        try{
+            UserEntity userEntity = userRepository.findById(postQuestionReq.getUserIdx()).get();
+            String name = userEntity.getName();
+
+            //DB에 email, content, createdAt 저장
+            QuestionEntity questionEntity = postQuestionReq.toEntity(userEntity);   // DTO -> Entity 변환
+            questionRepository.save(questionEntity);   // 유저 DB에 저장
+
+            //해당 이메일로 문의사항 접수되었다는 메일보내기
+            MailHandler mailHandler = new MailHandler(javaMailSender);
+            mailHandler.setFrom(from); //이거 naver메일 보낼때는 필수다!!!!!!
+            mailHandler.setTo(postQuestionReq.getEmail());
+            mailHandler.setSubject("[머니뭐니] "+ name +"님의 문의사항이 정상적으로 접수되었습니다.");
+            mailHandler.setText("빠른 시일 내에 답변드리겠습니다.\n\n좋은 의견 감사합니다.");
+            mailHandler.send();
+
+            return questionEntity.toPostQuestionRes();    // Entity -> DTO 변환
+
+        }catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
