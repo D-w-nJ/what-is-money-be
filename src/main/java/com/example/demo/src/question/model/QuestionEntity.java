@@ -1,5 +1,6 @@
 package com.example.demo.src.question.model;
 
+import com.example.demo.src.goal.model.GoalEntity;
 import com.example.demo.src.record.model.PostRecordRes;
 import com.example.demo.src.user.model.UserEntity;
 import lombok.*;
@@ -7,6 +8,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity //JPA가 사용하는 객체라는 뜻이다. 이 어노테이션이 있어야 JPA가 인식할 수 있다.
 @Table(name = "question")
@@ -23,9 +26,11 @@ public class QuestionEntity {
     private LocalDateTime createdAt;
     //private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
+
+
 
     public PostQuestionRes toPostQuestionRes() {
         return new PostQuestionRes(user.getId(),
@@ -33,9 +38,4 @@ public class QuestionEntity {
                 id);
     }
 
-    public void save(String email, String content, LocalDateTime createdAt){
-        this.email = email;
-        this.content = content;
-        this.createdAt = createdAt;
-    }
 }

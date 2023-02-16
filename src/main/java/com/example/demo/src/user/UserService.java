@@ -20,6 +20,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -342,9 +343,18 @@ public class UserService {
     //회원탈퇴
     public void deleteUser(Long userIdx)throws BaseException{
         try{
-            userRepository.deleteById(userIdx);
-            System.out.println("=======실행되었나?=======");
-
+            System.out.println("===userIdx?==="+userIdx);
+            userRepository.deleteRecord(userIdx);
+            System.out.println("=======기록삭제?=======");
+            userRepository.deleteCategory(userIdx);
+            System.out.println("=======카테고리삭제?=======");
+            userRepository.deleteGoal(userIdx);
+            System.out.println("=======목표삭제?=======");
+            userRepository.deleteQuestion(userIdx);
+            System.out.println("=======문의사항삭제?=======");
+            userRepository.deleteUser(userIdx);
+            System.out.println("=======드디어유저삭제?=======");
+            //userRepository.deleteById(userIdx);
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

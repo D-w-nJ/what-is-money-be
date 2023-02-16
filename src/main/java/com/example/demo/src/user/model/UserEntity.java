@@ -1,6 +1,9 @@
 package com.example.demo.src.user.model;
 
+import com.example.demo.src.category.model.CategoryEntity;
 import com.example.demo.src.goal.model.GoalEntity;
+import com.example.demo.src.question.model.QuestionEntity;
+import com.example.demo.src.record.model.RecordEntity;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,7 +46,7 @@ public class UserEntity {
     private String RT;
 
     //회원탈퇴할 때 외래키데이터 삭제
-    @OneToMany(mappedBy = "user_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user_id", fetch = FetchType.LAZY)//, cascade = CascadeType.ALL, orphanRemoval = true
     private List<GoalEntity> goalEntityList = new ArrayList<>();
 
     /*
